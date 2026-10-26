@@ -405,8 +405,8 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
           <article class="q is-todo" data-q="1">
             <div class="q-head"><span class="q-index">2</span><div>
-              <h3>Quantos desses leads agendaram consulta?</h3>
-              <p class="hint">Inclua consultas marcadas, mesmo que ainda não tenham acontecido. Ex.: 12</p>
+              <h3 data-v="q2">Quantos desses leads agendaram consulta?</h3>
+              <p class="hint" data-v="q2h">Inclua consultas marcadas, mesmo que ainda não tenham acontecido. Ex.: 12</p>
             </div></div>
             <div class="q-body">
               <div class="num" data-key="consultas">
@@ -421,8 +421,8 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
           <article class="q is-todo" data-q="2">
             <div class="q-head"><span class="q-index">3</span><div>
-              <h3>Algum desses pacientes evoluiu da consulta para tratamento ou procedimento?</h3>
-              <p class="hint">Ex.: fechou um protocolo, agendou um procedimento ou iniciou um tratamento depois da consulta.</p>
+              <h3 data-v="q3">Algum desses pacientes evoluiu da consulta para tratamento ou procedimento?</h3>
+              <p class="hint" data-v="q3h">Ex.: fechou um protocolo, agendou um procedimento ou iniciou um tratamento depois da consulta.</p>
             </div></div>
             <div class="q-body">
               <div class="seg" role="group" aria-label="Algum paciente evoluiu para tratamento?">
@@ -430,13 +430,13 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
                 <button type="button" data-yes="0" aria-pressed="false">Ainda não</button>
               </div>
               <div class="reveal" id="tratReveal"><div>
-                <p class="hint" style="margin-top:16px">Quantos pacientes?</p>
+                <p class="hint" style="margin-top:16px" data-v="q3n">Quantos pacientes?</p>
                 <div class="num" data-key="tratamentos" style="margin-top:8px">
                   <button class="num-btn" data-d="-1" aria-label="Diminuir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
                   <input class="num-input" inputmode="numeric" pattern="[0-9]*" placeholder="0" aria-label="Quantidade de pacientes em tratamento" autocomplete="off">
                   <button class="num-btn" data-d="1" aria-label="Aumentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
                 </div>
-                <div class="field" style="margin-top:12px"><label for="tratDesc">Quais tratamentos? (opcional)</label>
+                <div class="field" style="margin-top:12px"><label for="tratDesc" data-v="q3d">Quais tratamentos? (opcional)</label>
                   <input class="input" id="tratDesc" maxlength="200" placeholder="Ex.: 2 implantes hormonais, 1 protocolo capilar"></div>
               </div></div>
               <p class="q-error"></p>
@@ -453,13 +453,13 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
         <div class="card">
           <h3>Como você avalia a qualidade dos leads recebidos?</h3>
-          <p class="hint">Pense em quem chega com interesse real e perfil para a consulta. Ex.: <q>boa</q> se a maioria pergunta sobre agenda e valores e acaba marcando.</p>
+          <p class="hint" data-v="qh">Pense em quem chega com interesse real e perfil para a consulta. Ex.: <q>boa</q> se a maioria pergunta sobre agenda e valores e acaba marcando.</p>
           <div class="thermo" data-key="quality" role="radiogroup" aria-label="Qualidade dos leads"></div>
         </div>
 
         <div class="card">
           <h3>Como você avalia a renda média do público?</h3>
-          <p class="hint">Sua percepção pelas conversas: o valor da consulta particular é um obstáculo? Ex.: <q>média</q> se metade acha o valor alto.</p>
+          <p class="hint" data-v="ih">Sua percepção pelas conversas: o valor da consulta particular é um obstáculo? Ex.: <q>média</q> se metade acha o valor alto.</p>
           <div class="thermo" data-key="income" role="radiogroup" aria-label="Renda média do público"></div>
         </div>
 
@@ -479,7 +479,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
       <section class="screen" data-screen="comment" aria-labelledby="c-title">
         <p class="kicker">Etapa 4 de 4</p>
         <h2 id="c-title">Algo mais que a gente precisa saber?</h2>
-        <p class="hint">Seja o mais sincero e específico possível, principalmente nos pontos ruins: é isso que mais ajuda a qualificar os próximos leads. Ex.: <q>Muitos perguntam se atende Unimed</q>, <q>Chegaram vários de outra cidade</q>.</p>
+        <p class="hint" data-v="ch">Seja o mais sincero e específico possível, principalmente nos pontos ruins: é isso que mais ajuda a qualificar os próximos leads. Ex.: <q>Muitos perguntam se atende Unimed</q>, <q>Chegaram vários de outra cidade</q>.</p>
         <div class="card" style="padding:14px">
           <textarea class="input" id="comment" maxlength="2000" placeholder="Escreva aqui (opcional)" style="box-shadow:none;padding:6px 4px;min-height:150px"></textarea>
         </div>
@@ -500,7 +500,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
             <li><span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>Mapeando o perfil dos leads</li>
             <li><span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>Gerando seu relatório</li>
           </ul>
-          <p class="why">Esse mapeamento mostra o que acontece depois do clique. Com ele ajustamos palavras-chave, público e anúncios para atrair pacientes com o perfil certo e parar de pagar por quem não tem.</p>
+          <p class="why" data-v="why">Esse mapeamento mostra o que acontece depois do clique. Com ele ajustamos palavras-chave, público e anúncios para atrair pacientes com o perfil certo e parar de pagar por quem não tem.</p>
         </div>
       </section>
 
@@ -654,7 +654,7 @@ function applyBrand(brand = {}) {
 function greet(name) {
   const m = String(name || '').match(/^(dra?\.?)\s+(\S+)/i);
   if (m) return `${m[1][0].toUpperCase()}${m[1].slice(1).toLowerCase().replace(/\.?$/, '.')} ${m[2]}`;
-  return String(name || '').split(/\s+/)[0] || '';
+  return name ? 'equipe ' + String(name).trim() : '';
 }
 
 /* =========================================================
@@ -798,7 +798,7 @@ function selectNiche(id, silent) {
   if (!n) return;
   S.niche = { id: n.id, label: n.label, url: n.url || '' };
   $$('#nicheList .opt').forEach(o => o.setAttribute('aria-checked', o.dataset.id === id));
-  renderPeriodLabel(); updateBar();
+  renderPeriodLabel(); applyVocab(); updateBar();
   if (!silent) { vibrate(8); saveDraft(); }
 }
 $('#nicheList').addEventListener('click', e => { const o = e.target.closest('.opt'); if (o) selectNiche(o.dataset.id); });
@@ -820,7 +820,7 @@ const FN = (() => {
   // Cone invertido reto: laterais em linha reta do topo à ponta, fatiado em 3 etapas
   const VW = 340, TOP = 12, SH = 78, GAP = 3, CX = VW / 2;
   const TOPW = 312, BOTW = 104, TOTAL = 3 * SH + 2 * GAP;
-  const LABELS = ['leads', 'consultas', 'tratamentos'];
+  let LABELS = ['leads', 'consultas', 'tratamentos'];
   const vals = [null, null, null];
   const o = [0, 0, 0].map(() => ({ x: 0, v: 0, t: 0 }));
   const shown = [0, 0, 0];
@@ -969,7 +969,7 @@ const FN = (() => {
     });
   }
   function staticSVG(vs) {
-    let out = `<svg viewBox="0 0 340 258" width="100%" role="img" aria-label="Funil: ${vs[0]} leads, ${vs[1]} consultas, ${vs[2]} tratamentos" style="display:block">`;
+    let out = `<svg viewBox="0 0 340 258" width="100%" role="img" aria-label="Funil: ${vs[0]} ${LABELS[0]}, ${vs[1]} ${LABELS[1]}, ${vs[2]} ${LABELS[2]}" style="display:block">`;
     out += `<defs><filter id="fnShadowS" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-opacity=".16"/></filter></defs>`;
     for (let i = 0; i < 3; i++) {
       const y = TOP + i * (SH + GAP); const ink = inkOn(STAGE[i]);
@@ -984,8 +984,149 @@ const FN = (() => {
     return out + '</svg>';
   }
   draw();
-  return { set, finale, staticSVG, widthAt, geom: { TOP, SH, GAP, TOPW, BOTW, TOTAL }, get vals() { return vals.slice(); } };
+  function setLabels(ls) {
+    LABELS = ls.slice();
+    for (let i = 0; i < 3; i++) { ghost[i].t.textContent = LABELS[i][0].toUpperCase() + LABELS[i].slice(1); real[i].tl.textContent = LABELS[i]; }
+    svg.setAttribute('aria-label', 'Funil: ' + LABELS.join(', '));
+  }
+  return { set, setLabels, finale, staticSVG, widthAt, geom: { TOP, SH, GAP, TOPW, BOTW, TOTAL }, get vals() { return vals.slice(); } };
 })();
+
+
+/* =========================================================
+   Vocabulário por tipo de negócio (médico, pilates, massagem, fisio)
+   ========================================================= */
+const VOC = {
+  medico: {
+    f: ['leads', 'consultas', 'tratamentos'], s2: 'consultas', who: 'pacientes',
+    q2: 'Quantos desses leads agendaram consulta?', q2h: 'Inclua consultas marcadas, mesmo que ainda não tenham acontecido. Ex.: 12',
+    q3: 'Algum desses pacientes evoluiu da consulta para tratamento ou procedimento?', q3h: 'Ex.: fechou um protocolo, agendou um procedimento ou iniciou um tratamento depois da consulta.',
+    q3n: 'Quantos pacientes?', q3d: 'Quais tratamentos? (opcional)', q3p: 'Ex.: 2 implantes hormonais, 1 protocolo capilar',
+    d2: 'Viraram consulta', d3: 'Seguiram para tratamento',
+    qh: 'Pense em quem chega com interesse real e perfil para a consulta. Ex.: <q>boa</q> se a maioria pergunta sobre agenda e valores e acaba marcando.',
+    ih: 'Sua percepção pelas conversas: o valor da consulta particular é um obstáculo? Ex.: <q>média</q> se metade acha o valor alto.',
+    qn: ['Muitos curiosos ou sem perfil para a consulta.', 'Parte tem perfil; a outra parte só pesquisa.', 'A maioria chega interessada e com perfil.'],
+    inn: ['A maioria acha a consulta particular cara.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
+    renda: 'Não podem pagar o particular', servico: ['Outro serviço', 'Buscam outra especialidade'], conv: ['Plano de saúde', 'Querem usar convênio'],
+    cex: '<q>Muitos perguntam se atende Unimed</q>, <q>Chegaram vários de outra cidade</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras cidades', 'Querem atender pelo convênio', 'Somem depois do primeiro contato', 'Procuram outro procedimento', 'Demoram para responder'],
+    lede: 'quantos contatos chegaram, quantos viraram consulta e como está o perfil dos pacientes', why: 'atrair pacientes com o perfil certo',
+    r1: 'dos leads agendaram consulta', r2: 'das consultas seguiram para tratamento',
+    t: ['dos leads viraram consulta', 'das consultas viraram tratamento', 'dos leads viraram tratamento'], p: ['lead para consulta', 'consulta para tratamento', 'lead para tratamento']
+  },
+  pilates: {
+    f: ['leads', 'aulas experimentais', 'matrículas'], s2: 'aulas experimentais', who: 'alunos',
+    q2: 'Quantos desses leads agendaram aula experimental?', q2h: 'Inclua aulas experimentais marcadas, mesmo que ainda não tenham acontecido. Ex.: 12',
+    q3: 'Algum desses alunos fechou plano ou matrícula depois da aula experimental?', q3h: 'Ex.: plano mensal, trimestral, semestral ou pacote de aulas.',
+    q3n: 'Quantos alunos?', q3d: 'Quais planos? (opcional)', q3p: 'Ex.: 2 planos mensais, 1 trimestral',
+    d2: 'Agendaram aula experimental', d3: 'Fecharam plano',
+    qh: 'Pense em quem chega com interesse real em começar a praticar. Ex.: <q>boa</q> se a maioria pergunta horários e valores e agenda a aula.',
+    ih: 'Sua percepção pelas conversas: o valor da mensalidade é um obstáculo? Ex.: <q>média</q> se metade acha caro.',
+    qn: ['Muitos curiosos ou sem perfil para começar.', 'Parte quer começar; a outra parte só pesquisa preço.', 'A maioria chega decidida a começar.'],
+    inn: ['A maioria acha a mensalidade cara.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
+    renda: 'Acham a mensalidade cara', servico: ['Outra modalidade', 'Buscam academia, yoga ou outra atividade'], conv: ['Wellhub / Gympass', 'Querem usar benefício ou convênio'],
+    cex: '<q>Muitos perguntam se aceita Wellhub</q>, <q>Só querem horário à noite</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Perguntam se aceita Wellhub/Gympass', 'Somem depois do primeiro contato', 'Querem só aula avulsa', 'Horários não batem'],
+    lede: 'quantos contatos chegaram, quantos agendaram aula experimental e quantos fecharam plano', why: 'atrair alunos com o perfil certo',
+    r1: 'dos leads agendaram aula experimental', r2: 'das aulas viraram matrícula',
+    t: ['dos leads agendaram aula', 'das aulas viraram matrícula', 'dos leads viraram matrícula'], p: ['lead para aula experimental', 'aula para matrícula', 'lead para matrícula']
+  },
+  massagem: {
+    f: ['leads', 'sessões', 'pacotes'], s2: 'sessões', who: 'clientes',
+    q2: 'Quantos desses leads agendaram uma sessão?', q2h: 'Inclua sessões marcadas, mesmo que ainda não tenham acontecido. Ex.: 12',
+    q3: 'Algum desses clientes fechou pacote ou já marcou novas sessões?', q3h: 'Ex.: pacote de 5 sessões, plano mensal ou retorno já agendado.',
+    q3n: 'Quantos clientes?', q3d: 'Quais pacotes? (opcional)', q3p: 'Ex.: 2 pacotes de 5 sessões, 1 retorno',
+    d2: 'Agendaram sessão', d3: 'Fecharam pacote ou retorno',
+    qh: 'Pense em quem chega com interesse real em agendar. Ex.: <q>boa</q> se a maioria pergunta horários e valores e acaba marcando.',
+    ih: 'Sua percepção pelas conversas: o valor da sessão é um obstáculo? Ex.: <q>média</q> se metade acha caro.',
+    qn: ['Muitos curiosos ou procurando outro tipo de serviço.', 'Parte quer agendar; a outra parte só pesquisa preço.', 'A maioria chega decidida a agendar.'],
+    inn: ['A maioria acha a sessão cara.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
+    renda: 'Acham a sessão cara', servico: ['Outro serviço', 'Buscam outro tipo de massagem ou atendimento'], conv: ['Plano / benefício', 'Querem usar plano ou benefício'],
+    cex: '<q>Muitos procuram atendimento a domicílio</q>, <q>Perguntam valor e somem</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Querem atendimento a domicílio', 'Somem depois do primeiro contato', 'Procuram outro tipo de massagem', 'Horários não batem'],
+    lede: 'quantos contatos chegaram, quantos agendaram sessão e quantos fecharam pacote', why: 'atrair clientes com o perfil certo',
+    r1: 'dos leads agendaram sessão', r2: 'das sessões viraram pacote ou retorno',
+    t: ['dos leads agendaram sessão', 'das sessões viraram pacote', 'dos leads viraram pacote'], p: ['lead para sessão', 'sessão para pacote', 'lead para pacote']
+  },
+  fisioterapia: {
+    f: ['leads', 'avaliações', 'tratamentos'], s2: 'avaliações', who: 'pacientes',
+    q2: 'Quantos desses leads agendaram avaliação?', q2h: 'Inclua avaliações marcadas, mesmo que ainda não tenham acontecido. Ex.: 12',
+    q3: 'Algum desses pacientes fechou o tratamento depois da avaliação?', q3h: 'Ex.: pacote de 10 sessões, reabilitação, RPG ou pilates clínico.',
+    q3n: 'Quantos pacientes?', q3d: 'Quais tratamentos? (opcional)', q3p: 'Ex.: 2 pacotes de 10 sessões de RPG',
+    d2: 'Agendaram avaliação', d3: 'Fecharam tratamento',
+    qh: 'Pense em quem chega com interesse real em iniciar o tratamento. Ex.: <q>boa</q> se a maioria pergunta horários e valores e agenda a avaliação.',
+    ih: 'Sua percepção pelas conversas: o valor da sessão particular é um obstáculo? Ex.: <q>média</q> se metade acha o valor alto.',
+    qn: ['Muitos curiosos ou sem perfil para o tratamento.', 'Parte tem perfil; a outra parte só pesquisa.', 'A maioria chega decidida a tratar.'],
+    inn: ['A maioria acha a sessão particular cara.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
+    renda: 'Não podem pagar o particular', servico: ['Outro serviço', 'Buscam ortopedista, quiropraxia ou outro serviço'], conv: ['Plano de saúde', 'Querem usar convênio'],
+    cex: '<q>Muitos perguntam se atende pelo plano</q>, <q>Querem só uma sessão avulsa</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Querem atender pelo convênio', 'Somem depois do primeiro contato', 'Querem só sessão avulsa', 'Demoram para responder'],
+    lede: 'quantos contatos chegaram, quantos agendaram avaliação e quantos fecharam tratamento', why: 'atrair pacientes com o perfil certo',
+    r1: 'dos leads agendaram avaliação', r2: 'das avaliações viraram tratamento',
+    t: ['dos leads agendaram avaliação', 'das avaliações viraram tratamento', 'dos leads viraram tratamento'], p: ['lead para avaliação', 'avaliação para tratamento', 'lead para tratamento']
+  },
+  geral: {
+    f: ['leads', 'agendamentos', 'fechamentos'], s2: 'agendamentos', who: 'clientes',
+    q2: 'Quantos desses leads agendaram (aula, sessão ou avaliação)?', q2h: 'Some todos os agendamentos, mesmo os que ainda não aconteceram. Ex.: 12',
+    q3: 'Algum desses clientes fechou plano, pacote ou tratamento?', q3h: 'Ex.: plano de pilates, pacote de massagem ou tratamento de fisioterapia.',
+    q3n: 'Quantos clientes?', q3d: 'O que foi fechado? (opcional)', q3p: 'Ex.: 2 planos de pilates, 1 pacote de massagem',
+    d2: 'Agendaram', d3: 'Fecharam plano ou pacote',
+    qh: 'Pense em quem chega com interesse real em agendar. Ex.: <q>boa</q> se a maioria pergunta horários e valores e acaba marcando.',
+    ih: 'Sua percepção pelas conversas: o valor é um obstáculo? Ex.: <q>média</q> se metade acha caro.',
+    qn: ['Muitos curiosos ou sem perfil.', 'Parte quer agendar; a outra parte só pesquisa preço.', 'A maioria chega decidida a agendar.'],
+    inn: ['A maioria acha o valor alto.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
+    renda: 'Acham o valor alto', servico: ['Outro serviço', 'Buscam algo que não oferecemos'], conv: ['Plano / benefício', 'Querem usar plano, convênio ou Wellhub'],
+    cex: '<q>Muitos perguntam se aceita Wellhub</q>, <q>Chegaram vários de outra região</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Perguntam por convênio ou Wellhub', 'Somem depois do primeiro contato', 'Procuram outro serviço', 'Horários não batem'],
+    lede: 'quantos contatos chegaram, quantos agendaram e quantos fecharam', why: 'atrair clientes com o perfil certo',
+    r1: 'dos leads agendaram', r2: 'dos agendamentos viraram fechamento',
+    t: ['dos leads agendaram', 'dos agendamentos fecharam', 'dos leads fecharam'], p: ['lead para agendamento', 'agendamento para fechamento', 'lead para fechamento']
+  }
+};
+function guessVocab(txt) {
+  txt = String(txt || '').toLowerCase();
+  if (/pilates/.test(txt)) return 'pilates';
+  if (/massag/.test(txt)) return 'massagem';
+  if (/fisio/.test(txt)) return 'fisioterapia';
+  return null;
+}
+function nicheVocab(n) { return (n && (VOC[n.vocab] ? n.vocab : (guessVocab(n.label) || guessVocab(n.url)))) || null; }
+function currentVocab() {
+  const list = niches();
+  const brandV = VOC[S.link?.brand?.vocab] ? S.link.brand.vocab : null;
+  if (S.niche && S.niche.id !== 'todos') {
+    const n = list.find(x => x.id === S.niche.id) || S.niche;
+    return nicheVocab(n) || brandV || guessVocab(S.link?.client_name) || 'medico';
+  }
+  if (list.length > 1) {
+    const vs = [...new Set(list.map(n => nicheVocab(n) || brandV || 'medico'))];
+    return vs.length === 1 ? vs[0] : 'geral';
+  }
+  return brandV || nicheVocab(list[0]) || guessVocab(S.link?.client_name) || 'medico';
+}
+let W = VOC.medico;
+function applyVocab() {
+  S.vocab = currentVocab(); W = VOC[S.vocab];
+  $$('[data-v]').forEach(el => {
+    const k = el.dataset.v;
+    if (k === 'ch') el.innerHTML = `Seja o mais sincero e específico possível, principalmente nos pontos ruins: é isso que mais ajuda a qualificar os próximos leads. Ex.: ${W.cex}.`;
+    else if (k === 'why') el.textContent = `Esse mapeamento mostra o que acontece depois do clique. Com ele ajustamos palavras-chave, público e anúncios para ${W.why} e parar de pagar por quem não tem.`;
+    else if (W[k] != null) el.innerHTML = W[k];
+  });
+  $('#tratDesc').placeholder = W.q3p;
+  $('.q[data-q="1"] .lbl').textContent = W.d2;
+  $('.q[data-q="2"] .lbl').textContent = W.d3;
+  $('.num[data-key="consultas"] .num-input').setAttribute('aria-label', 'Quantidade de ' + W.s2);
+  THERMO.quality.notes = W.qn; THERMO.income.notes = W.inn;
+  REASONS.find(r => r.k === 'renda').s = W.renda;
+  Object.assign(REASONS.find(r => r.k === 'servico'), { b: W.servico[0], s: W.servico[1] });
+  Object.assign(REASONS.find(r => r.k === 'convenio'), { b: W.conv[0], s: W.conv[1] });
+  REASONS.forEach(r => { REASON_LABEL[r.k] = r.b; });
+  if (typeof buildChips === 'function') buildChips();
+  if (typeof buildQuick === 'function') buildQuick();
+  FN.setLabels(W.f);
+  if (S.link) $('#w-lede').textContent = `Olá, ${greet(S.link.client_name)}. Conte para a gente o que aconteceu depois do clique: ${W.lede}. Com isso geramos seu relatório de acompanhamento.`;
+}
 
 function placeViz() {
   const card = $('#vizCard');
@@ -1046,15 +1187,15 @@ function funnelStepReady() {
 function validateQ(i) {
   if (i === 0) {
     const v = readNum('leads'); if (v == null) return 'Informe um número (pode ser 0).';
-    if (S.consultas != null && S.consultas > v) return `Esse número ficou menor que as consultas (${S.consultas}). Ajuste as duas respostas.`;
+    if (S.consultas != null && S.consultas > v) return `Esse número ficou menor que as ${W.s2} (${S.consultas}). Ajuste as duas respostas.`;
   }
   if (i === 1) {
     const v = readNum('consultas'); if (v == null) return 'Informe um número (pode ser 0).';
     if (v > (S.leads ?? 0)) return `Não pode ser maior que o número de leads (${S.leads}).`;
   }
   if (i === 2 && S.tratYes) {
-    const v = readNum('tratamentos') ?? 0; if (v < 1) return 'Informe quantos pacientes.';
-    if (v > (S.consultas ?? 0)) return `Não pode ser maior que o número de consultas (${S.consultas}).`;
+    const v = readNum('tratamentos') ?? 0; if (v < 1) return `Informe quantos ${W.who}.`;
+    if (v > (S.consultas ?? 0)) return `Não pode ser maior que o número de ${W.s2} (${S.consultas}).`;
   }
   return '';
 }
@@ -1179,7 +1320,8 @@ const REASONS = [
 ];
 const REASON_LABEL = Object.fromEntries(REASONS.map(r => [r.k, r.b]));
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>';
-$('#chips').innerHTML = REASONS.map(r => `<button type="button" class="chip${r.full ? ' full' : ''}" data-k="${r.k}" aria-pressed="false"><span class="box">${CHECK}</span><div><b>${r.b}</b><span>${r.s}</span></div></button>`).join('');
+function buildChips() { $('#chips').innerHTML = REASONS.map(r => `<button type="button" class="chip${r.full ? ' full' : ''}" data-k="${r.k}" aria-pressed="false"><span class="box">${CHECK}</span><div><b>${r.b}</b><span>${r.s}</span></div></button>`).join(''); $$('.chip').forEach(c => c.setAttribute('aria-pressed', S.reasons.includes(c.dataset.k))); }
+buildChips();
 $('#chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   const k = c.dataset.k; let set = new Set(S.reasons);
@@ -1201,7 +1343,8 @@ $('#otherTxt').addEventListener('input', e => { S.reasonOther = e.target.value; 
    Comentário
    ========================================================= */
 const QUICK = ['Perguntam só o preço', 'Muitos de outras cidades', 'Querem atender pelo convênio', 'Somem depois do primeiro contato', 'Procuram outro procedimento', 'Demoram para responder'];
-$('#quick').innerHTML = QUICK.map(q => `<button type="button">${q}</button>`).join('');
+function buildQuick() { $('#quick').innerHTML = (W.quick || QUICK).map(q => `<button type="button">${q}</button>`).join(''); }
+buildQuick();
 $('#quick').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const ta = $('#comment'); const t = ta.value.trim();
@@ -1245,6 +1388,7 @@ function payload() {
     version: 1,
     period: { key: S.period.key, label: S.period.label, start: S.period.start, end: S.period.end },
     niche: S.niche,
+    vocab: S.vocab || 'medico',
     leads: S.leads, consultas: S.consultas, tratamentos: S.tratamentos || 0, tratamentos_desc: S.tratDesc,
     quality: S.quality, income: S.income, quality_score: S.qualityScore || null, income_score: S.incomeScore || null,
     reasons: S.reasons, reason_other: S.reasons.includes('outro') ? S.reasonOther.trim() : '',
@@ -1291,9 +1435,9 @@ function renderSummary() {
   $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
   $('#sumTiles').innerHTML = [
-    [pct(c, l) + '%', 'dos leads viraram consulta'],
-    [pct(t, c) + '%', 'das consultas viraram tratamento'],
-    [pct(t, l) + '%', 'dos leads viraram tratamento']
+    [pct(c, l) + '%', W.t[0]],
+    [pct(t, c) + '%', W.t[1]],
+    [pct(t, l) + '%', W.t[2]]
   ].map(([b, s]) => `<div class="tile"><b>${b}</b><span>${s}</span></div>`).join('');
   const row = (label, key) => {
     const cfg = THERMO[key]; const i = cfg.values.indexOf(S[key]);
@@ -1342,7 +1486,7 @@ async function makePDF() {
     y += 34; txt('Funil do período', M, y, { bold: true, size: 12 });
     y += 18;
     const vs = [S.leads || 0, S.consultas || 0, S.tratamentos || 0];
-    const names = ['leads', 'consultas', 'tratamentos'];
+    const names = W.f;
     // cone invertido reto, à esquerda; taxas à direita de cada fatia
     const cTop = 330, cBot = 112, sh = 46, sg = 3, total = 3 * sh + 2 * sg, cx = M + cTop / 2, y0 = y;
     const wAt = yy => cTop - (cTop - cBot) * ((yy - y0) / total);
@@ -1357,14 +1501,14 @@ async function makePDF() {
         const edge = cx + wAt(a + sh / 2) / 2 + 16;
         doc.setDrawColor(...LINE); doc.setLineWidth(0.8); doc.line(edge - 10, a + sh / 2 - 3, edge - 2, a + sh / 2 - 3);
         txt(`${pct(vs[i], vs[i - 1])}%`, edge + 2, a + sh / 2 + 1, { bold: true, size: 13 });
-        txt(i === 1 ? 'dos leads agendaram consulta' : 'das consultas seguiram para tratamento', edge + 2, a + sh / 2 + 13, { size: 8.5, color: INK2 });
+        txt(i === 1 ? W.r1 : W.r2, edge + 2, a + sh / 2 + 13, { size: 8.5, color: INK2 });
       }
     });
     y = y0 + total;
 
     // indicadores
     y += 22;
-    const tiles = [[pct(vs[1], vs[0]) + '%', 'lead para consulta'], [pct(vs[2], vs[1]) + '%', 'consulta para tratamento'], [pct(vs[2], vs[0]) + '%', 'lead para tratamento']];
+    const tiles = [[pct(vs[1], vs[0]) + '%', W.p[0]], [pct(vs[2], vs[1]) + '%', W.p[1]], [pct(vs[2], vs[0]) + '%', W.p[2]]];
     const tw = (R - M - 24) / 3;
     tiles.forEach(([b, s], i) => {
       const x = M + i * (tw + 12);
@@ -1463,7 +1607,7 @@ async function init() {
   } catch (e) { return fail('network'); }
   applyBrand(S.link.brand || {});
   document.title = `Relatório de acompanhamento · ${S.link.client_name}`;
-  $('#w-lede').textContent = `Olá, ${greet(S.link.client_name)}. Conte para a gente o que aconteceu depois do clique: quantos contatos chegaram, quantos viraram consulta e como está o perfil dos pacientes. Com isso geramos seu relatório de acompanhamento.`;
+  applyVocab();
   $('#loader').remove();
   buildNiches();
   restoreDraft();
