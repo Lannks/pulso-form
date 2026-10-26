@@ -26,9 +26,9 @@
   --accent-2:#5AA0EA;
   --brand-wash:#EAF2FC;
   --head:var(--display);
-  --bad:#FF3B30;
-  --mid:#FF9F0A;
-  --good:#30B158;
+  --bad:#EA4335;
+  --mid:#FBBC05;
+  --good:#34A853;
   --ease:cubic-bezier(.22,1,.36,1);
   --spring:cubic-bezier(.34,1.56,.64,1);
   --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Geist", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -224,24 +224,17 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .reveal > div{overflow:hidden}
 
 /* ---------- thermometer ---------- */
-.thermo{margin-top:22px;user-select:none;-webkit-user-select:none}
-.th-track{position:relative;height:12px;margin:0 14px;border-radius:12px;touch-action:none;cursor:pointer}
-.th-track::before{content:"";position:absolute;inset:0;border-radius:12px;background:linear-gradient(90deg,var(--bad),var(--mid) 50%,var(--good));opacity:.18}
-.th-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:12px;background:linear-gradient(90deg,var(--bad),var(--mid),var(--good));background-size:var(--tw,300px) 100%;transition:width .5s var(--spring)}
-.th-hit{position:absolute;left:-14px;right:-14px;top:-18px;bottom:-18px}
-.th-thumb{position:absolute;top:50%;left:0;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.06);display:grid;place-items:center;transition:left .5s var(--spring), opacity .3s, transform .2s;opacity:0;transform:scale(.6)}
-.th-thumb::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--thc,var(--ink-3));transition:background .3s}
-.thermo.has-val .th-thumb{opacity:1;transform:none}
-.thermo.dragging .th-thumb,.thermo.dragging .th-fill{transition:none}
-.thermo.dragging .th-thumb{transform:scale(1.12)}
-.th-stops{display:grid;grid-template-columns:repeat(3,1fr);margin-top:14px}
-.th-stops button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 2px;font-size:13.5px;color:var(--ink-2);font-weight:500;border-radius:12px;transition:color .25s}
-.th-stops button:first-child{align-items:flex-start}
-.th-stops button:last-child{align-items:flex-end}
-.th-stops button[aria-checked="true"]{color:var(--ink);font-weight:600}
-.th-stops .dot{opacity:.35;transition:opacity .25s, transform .3s var(--spring)}
-.th-stops button[aria-checked="true"] .dot{opacity:1;transform:scale(1.25)}
-.th-note{font-size:13.5px;color:var(--ink-2);margin-top:10px;min-height:20px;transition:opacity .3s}
+.thermo{margin-top:20px;user-select:none;-webkit-user-select:none}
+.th-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.th-score{font-family:var(--head);font-size:30px;font-weight:700;letter-spacing:-.02em;color:var(--ink-3);font-variant-numeric:tabular-nums;transition:color .3s}
+.th-score small{font-size:15px;font-weight:600;color:var(--ink-3)}
+.th-word{font-size:14px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--fill);color:var(--ink-2);transition:all .3s}
+.th-scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;touch-action:none}
+.th-scale button{height:40px;border-radius:9px;background:var(--fill);color:var(--ink-3);font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;transition:background .25s, color .25s, transform .25s var(--spring)}
+.th-scale button.on{color:#fff}
+.th-scale button.cur{transform:translateY(-3px) scale(1.06);box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.th-ends{display:flex;justify-content:space-between;margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+.th-note{font-size:13.5px;color:var(--ink-2);margin-top:10px;min-height:20px}
 
 /* ---------- reasons ---------- */
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
@@ -518,12 +511,12 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         <p class="sum-sub" id="sumPeriod"></p>
         <div class="card" id="sumFunnel" style="padding:12px 10px 6px"></div>
         <div class="tiles" id="sumTiles"></div>
-        <div class="card" style="padding:6px 16px">
+        <div hidden>
           <div class="meter-row" id="sumQuality"></div>
           <div class="meter-row" id="sumIncome"></div>
+          <div id="sumReasons"></div>
+          <div id="sumComment"></div>
         </div>
-        <div class="card" id="sumReasons"></div>
-        <div class="card" id="sumComment"></div>
         <p class="done-note">Você já pode fechar esta página. Obrigado pela parceria.</p>
       </section>
 
@@ -549,7 +542,6 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 <div class="viz-card" id="vizCard">
   <div class="viz-head"><b>Funil do período</b><span id="vizPeriod"></span></div>
   <svg id="fn-svg" viewBox="0 0 340 258" role="img" aria-label="Funil: leads, consultas e tratamentos"></svg>
-  <p class="fn-insight pre" id="fnInsight"></p>
   <div class="side-extra" id="sideExtra"></div>
 </div>
 
@@ -846,7 +838,7 @@ const FN = (() => {
     const y0 = TOP + i * (SH + GAP), y1 = y0 + SH;
     const w0 = widthAt(y0), w1 = widthAt(y1);
     const xl0 = CX - w0 / 2, xr0 = CX + w0 / 2, xl1 = CX - w1 / 2, xr1 = CX + w1 / 2;
-    const rt = i === 0 ? 14 : 0, rb = i === 2 ? 12 : 0;
+    const rt = i === 0 ? 4 : 0, rb = i === 2 ? 4 : 0;
     const k = (w0 - w1) / 2 / SH; // inclinação (x por y)
     let d = `M${xl0 + rt},${y0} L${xr0 - rt},${y0}`;
     d += rt ? ` Q${xr0},${y0} ${xr0 - k * rt},${y0 + rt}` : '';
@@ -1007,7 +999,7 @@ function placeViz() {
 function makePark() { const d = document.createElement('div'); d.id = 'park'; d.hidden = true; document.body.appendChild(d); return d; }
 window.addEventListener('resize', () => placeViz());
 
-function insight() {
+function insight() { return;
   const [l, c, t] = [S.leads, S.consultas, S.tratamentos];
   const el = $('#fnInsight');
   if (l == null || c == null || S.tratYes == null) { el.classList.add('pre'); return; }
@@ -1132,40 +1124,43 @@ $$('.num').forEach(bindNum);
    Termômetros
    ========================================================= */
 const THERMO = {
-  quality: { labels: ['Ruim', 'Média', 'Boa'], values: ['ruim', 'media', 'boa'],
+  quality: { labels: ['Ruim', 'Média', 'Boa'], values: ['ruim', 'media', 'boa'], ends: ['1 · Ruim', 'Boa · 10'],
     notes: ['Muitos curiosos ou sem perfil para a consulta.', 'Parte tem perfil; a outra parte só pesquisa.', 'A maioria chega interessada e com perfil.'] },
-  income: { labels: ['Baixa renda', 'Média renda', 'Alta renda'], values: ['baixa', 'media', 'alta'],
+  income: { labels: ['Baixa renda', 'Média renda', 'Alta renda'], values: ['baixa', 'media', 'alta'], ends: ['1 · Baixa', 'Alta · 10'],
     notes: ['A maioria acha a consulta particular cara.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'] }
 };
 const TH_COLORS = ['var(--bad)', 'var(--mid)', 'var(--good)'];
+const bucketOf = n => (n <= 3 ? 0 : n <= 7 ? 1 : 2);
+function scoreColor(n) { const t = (n - 1) / 9; return t < 0.5 ? mix('#EA4335', '#FBBC05', t * 2) : mix('#FBBC05', '#34A853', (t - 0.5) * 2); }
 function buildThermo(box) {
   const key = box.dataset.key, cfg = THERMO[key];
-  box.innerHTML = `<div class="th-track"><div class="th-fill"></div><div class="th-hit"></div><div class="th-thumb" aria-hidden="true"></div></div>
-    <div class="th-stops">${cfg.labels.map((l, i) => `<button type="button" role="radio" aria-checked="false" data-i="${i}"><span class="dot" style="background:${TH_COLORS[i]}"></span>${l}</button>`).join('')}</div>
-    <p class="th-note">Toque em uma opção ou arraste o marcador.</p>`;
-  const track = $('.th-track', box), fill = $('.th-fill', box), thumb = $('.th-thumb', box);
-  const setPos = f => { fill.style.width = (f * 100) + '%'; thumb.style.left = (f * 100) + '%'; };
-  const select = (i, silent) => {
-    S[key] = cfg.values[i]; box.classList.add('has-val');
-    setPos(i / 2); thumb.style.setProperty('--thc', TH_COLORS[i]);
-    $$('.th-stops button', box).forEach((b, k) => b.setAttribute('aria-checked', k === i));
-    $('.th-note', box).textContent = cfg.notes[i];
-    if (!silent) vibrate(10);
+  box.innerHTML = `<div class="th-head"><span class="th-score">–<small> /10</small></span><span class="th-word">Escolha de 1 a 10</span></div>
+    <div class="th-scale" role="radiogroup">${Array.from({ length: 10 }, (_, i) => `<button type="button" role="radio" aria-checked="false" aria-label="${i + 1} de 10" data-n="${i + 1}">${i + 1}</button>`).join('')}</div>
+    <div class="th-ends"><span>${cfg.ends[0]}</span><span>${cfg.labels[1]}</span><span>${cfg.ends[1]}</span></div>
+    <p class="th-note">Toque em um número ou arraste pela barra.</p>`;
+  const btns = $$('.th-scale button', box);
+  const paint = n => btns.forEach((b, i) => { const on = i < n; b.classList.toggle('on', on); b.classList.toggle('cur', i === n - 1); b.style.background = on ? scoreColor(i + 1) : ''; b.setAttribute('aria-checked', i === n - 1); });
+  const select = (n, silent) => {
+    n = Math.max(1, Math.min(10, n)); const bk = bucketOf(n);
+    S[key] = cfg.values[bk]; S[key + 'Score'] = n;
+    paint(n);
+    const sc = $('.th-score', box); sc.innerHTML = `${n}<small> /10</small>`; sc.style.color = scoreColor(n);
+    const w = $('.th-word', box); w.textContent = cfg.labels[bk]; w.style.background = mix(scoreColor(n), '#ffffff', 0.82); w.style.color = mix(scoreColor(n), '#000000', 0.35);
+    $('.th-note', box).textContent = cfg.notes[bk];
+    if (!silent) vibrate(8);
     renderSideExtra(); updateBar(); saveDraft();
   };
   box._select = select;
-  const ro = new ResizeObserver(() => fill.style.setProperty('--tw', track.clientWidth + 'px')); ro.observe(track);
-  $$('.th-stops button', box).forEach(b => b.addEventListener('click', () => select(+b.dataset.i)));
-  const frac = e => { const r = track.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); };
-  let drag = false;
-  track.addEventListener('pointerdown', e => { drag = true; box.classList.add('dragging', 'has-val'); track.setPointerCapture(e.pointerId); setPos(frac(e)); thumb.style.setProperty('--thc', TH_COLORS[Math.round(frac(e) * 2)]); });
-  track.addEventListener('pointermove', e => { if (!drag) return; const f = frac(e); setPos(f); thumb.style.setProperty('--thc', TH_COLORS[Math.round(f * 2)]); });
-  const end = e => { if (!drag) return; drag = false; box.classList.remove('dragging'); select(Math.round(frac(e) * 2)); };
-  track.addEventListener('pointerup', end); track.addEventListener('pointercancel', end);
+  const scale = $('.th-scale', box);
+  const at = e => { const r = scale.getBoundingClientRect(); return Math.ceil(Math.max(0.01, Math.min(1, (e.clientX - r.left) / r.width)) * 10); };
+  let drag = false, last = 0;
+  scale.addEventListener('pointerdown', e => { drag = true; scale.setPointerCapture(e.pointerId); last = at(e); select(last); });
+  scale.addEventListener('pointermove', e => { if (!drag) return; const n = at(e); if (n !== last) { last = n; select(n); } });
+  ['pointerup', 'pointercancel'].forEach(ev => scale.addEventListener(ev, () => { drag = false; }));
   box.addEventListener('keydown', e => {
-    const cur = cfg.values.indexOf(S[key]);
-    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); select(Math.min(2, cur + 1)); $$('.th-stops button', box)[Math.min(2, cur + 1)].focus(); }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); select(Math.max(0, cur < 0 ? 0 : cur - 1)); $$('.th-stops button', box)[Math.max(0, cur - 1)].focus(); }
+    const cur = S[key + 'Score'] || 0;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); select(cur + 1); btns[Math.min(9, cur)].focus(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); select(Math.max(1, cur - 1)); btns[Math.max(0, cur - 2)].focus(); }
   });
 }
 $$('.thermo').forEach(buildThermo);
@@ -1233,7 +1228,8 @@ function renderSideExtra() {
   const mm = (label, key) => {
     const cfg = THERMO[key]; const i = cfg.values.indexOf(S[key]);
     if (i < 0) return '';
-    return `<div class="mini-meter"><span class="mm-label">${label}</span><span class="mm-val"><span class="dot" style="background:${TH_COLORS[i]}"></span>${cfg.labels[i]}</span></div>`;
+    const n = S[key + 'Score'];
+    return `<div class="mini-meter"><span class="mm-label">${label}</span><span class="mm-val"><span class="dot" style="background:${scoreColor(n || 5)}"></span>${n ? n + '/10 · ' : ''}${cfg.labels[i]}</span></div>`;
   };
   h += mm('Qualidade dos leads', 'quality') + mm('Renda do público', 'income');
   const rs = S.reasons.filter(r => r !== 'nenhum');
@@ -1250,7 +1246,7 @@ function payload() {
     period: { key: S.period.key, label: S.period.label, start: S.period.start, end: S.period.end },
     niche: S.niche,
     leads: S.leads, consultas: S.consultas, tratamentos: S.tratamentos || 0, tratamentos_desc: S.tratDesc,
-    quality: S.quality, income: S.income,
+    quality: S.quality, income: S.income, quality_score: S.qualityScore || null, income_score: S.incomeScore || null,
     reasons: S.reasons, reason_other: S.reasons.includes('outro') ? S.reasonOther.trim() : '',
     comment: S.comment.trim(),
     submitted_at: new Date().toISOString()
@@ -1378,40 +1374,6 @@ async function makePDF() {
     });
     y += 58 + 30;
 
-    // perfil
-    txt('Perfil dos leads', M, y, { bold: true, size: 12 }); y += 10;
-    const COL = [[255, 59, 48], [255, 159, 10], [48, 177, 88]];
-    const meter = (label, key) => {
-      y += 26; const cfg = THERMO[key]; const sel = cfg.values.indexOf(S[key]);
-      txt(label, M, y + 4, { size: 10, color: INK2 });
-      const mx = 230, mw = R - mx, sw = (mw - 8) / 3;
-      for (let k = 0; k < 3; k++) {
-        doc.setFillColor(...(k === sel ? COL[k] : LINE)); doc.roundedRect(mx + k * (sw + 4), y - 3, sw, 8, 4, 4, 'F');
-        txt(cfg.labels[k], mx + k * (sw + 4) + sw / 2, y + 18, { size: 8.5, color: k === sel ? INK : INK2, bold: k === sel, align: 'center' });
-      }
-      y += 16;
-    };
-    meter('Qualidade dos leads', 'quality');
-    meter('Renda média do público', 'income');
-
-    y += 28; txt('Motivos de desqualificação', M, y, { bold: true, size: 12 }); y += 18;
-    const rs = S.reasons.includes('nenhum') ? ['Nenhum motivo relevante'] : S.reasons.map(r => r === 'outro' ? `Outro: ${S.reasonOther.trim()}` : REASON_LABEL[r]);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-    const rl = doc.splitTextToSize(rs.join('  •  '), R - M);
-    doc.setTextColor(...INK); doc.text(rl, M, y); y += rl.length * 14;
-
-    const blocks = [];
-    if (S.tratDesc) blocks.push(['Tratamentos', S.tratDesc]);
-    blocks.push(['Observações', S.comment.trim() || 'Nenhuma observação adicional.']);
-    for (const [title, body] of blocks) {
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-      const lines = doc.splitTextToSize(body, R - M - 28);
-      const bhh = lines.length * 14 + 24;
-      if (y + 34 + bhh > 796) { doc.addPage(); y = M; }
-      y += 22; txt(title, M, y, { bold: true, size: 12 }); y += 12;
-      doc.setFillColor(...FILL); doc.roundedRect(M, y, R - M, bhh, 10, 10, 'F');
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...INK); doc.text(lines, M + 14, y + 20); y += bhh;
-    }
     const pages = doc.getNumberOfPages();
     for (let p = 1; p <= pages; p++) {
       doc.setPage(p); doc.setDrawColor(...LINE); doc.setLineWidth(0.6); doc.line(M, 806, R, 806);
@@ -1435,7 +1397,7 @@ function saveDraft() {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({
       period: S.period, niche: S.niche, leads: S.leads, consultas: S.consultas, tratYes: S.tratYes, tratamentos: S.tratamentos, tratDesc: $('#tratDesc').value,
-      quality: S.quality, income: S.income, reasons: S.reasons, reasonOther: S.reasonOther, comment: $('#comment').value,
+      quality: S.quality, income: S.income, qualityScore: S.qualityScore, incomeScore: S.incomeScore, reasons: S.reasons, reasonOther: S.reasonOther, comment: $('#comment').value,
       d: [S._done0, S._done1, S._done2]
     }));
   } catch (e) {}
@@ -1458,7 +1420,7 @@ function restoreDraft() {
   if (d.d?.[2] && d.tratYes != null) commitQ(2);
   const next = [0, 1, 2].find(k => !isAnswered(k)); activateQ(next == null ? 3 : next);
   if (next == null) { S.finalePlayed = true; insight(); }
-  ['quality', 'income'].forEach(k => { const i = THERMO[k].values.indexOf(d[k]); if (i >= 0) $(`.thermo[data-key="${k}"]`)._select(i, true); });
+  ['quality', 'income'].forEach(k => { const n = d[k + 'Score']; if (n) $(`.thermo[data-key="${k}"]`)._select(n, true); });
   S.reasons = d.reasons || []; S.reasonOther = d.reasonOther || ''; $('#otherTxt').value = S.reasonOther; syncReasons();
   $('#comment').value = d.comment || ''; onComment();
 }
