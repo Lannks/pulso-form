@@ -307,16 +307,24 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .ok-banner > div span{display:block;font-size:13px;color:#1F5130;margin-top:3px}
 .bar.is-summary{flex-direction:column;gap:8px}
 .bar.is-summary .btn-primary{flex:none;width:100%}
-.btn-another{width:100%;height:auto;min-height:58px;padding-top:9px !important;padding-bottom:9px !important;flex:none;justify-content:flex-start;gap:12px;padding:0 14px 0 10px;text-align:left;background:var(--surface);color:var(--ink);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 70%,transparent) inset}
-.btn-another[hidden]{display:none}
-.btn-another .ba-ico{width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 14%,#fff);color:var(--accent)}
-.btn-another .ba-ico svg{width:18px;height:18px}
-.btn-another .ba-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
-.btn-another small{font-size:12px;font-weight:500;color:var(--ink-2);letter-spacing:0}
-.btn-another b{font-size:15.5px;font-weight:650;line-height:1.25;letter-spacing:-.012em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-wrap:balance}
-.btn-another.is-long b{font-size:14px}
-.btn-another.is-long small{font-size:11.5px}
-.btn-another .ba-go{width:18px;height:18px;flex:none;color:var(--ink-3)}
+.another{width:100%;flex:none;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 60%,transparent) inset;overflow:hidden}
+.another[hidden]{display:none}
+.another-h{padding:10px 14px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
+.ba{width:100%;min-height:58px;display:flex;align-items:center;gap:12px;padding:9px 14px 9px 10px;text-align:left;color:var(--ink);transition:background .2s}
+.ba:active{background:var(--fill)}
+.another.is-list .ba{min-height:50px;padding-top:7px;padding-bottom:7px}
+.another.is-list .ba + .ba{box-shadow:0 -1px 0 var(--line)}
+.ba-ico{width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--c,var(--accent)) 14%,#fff);color:var(--c,var(--accent))}
+.another.is-list .ba-ico{width:32px;height:32px;border-radius:10px}
+.ba-ico svg{width:18px;height:18px}
+.ba-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.ba-txt small{font-size:12px;font-weight:500;color:var(--ink-2)}
+.ba-txt b{font-size:15.5px;font-weight:650;line-height:1.25;letter-spacing:-.012em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-wrap:balance}
+.another.is-list .ba-txt b{font-size:15px}
+.ba.is-long .ba-txt b{font-size:14px}
+.ba.is-other .ba-txt b{font-weight:600;color:var(--ink-2)}
+.ba-go{width:18px;height:18px;flex:none;color:var(--ink-3)}
+.bar.is-summary.is-tall{position:static}
 .sum-title{margin-top:24px;font-size:22px}
 .close-note{display:flex;gap:12px;align-items:center;margin-top:16px;padding:14px 16px;border-radius:18px;background:var(--surface);box-shadow:0 0 0 1px var(--line) inset}
 .close-note svg{width:26px;height:26px;color:var(--accent);flex:none}
@@ -563,7 +571,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
     <footer class="bar" id="bar" hidden>
       <button class="btn btn-back" id="btnBack" aria-label="Voltar" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-      <button type="button" class="btn btn-another" id="btnAnother" hidden><span class="ba-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="ba-txt"><small>Registrar outro funil</small><b id="btnAnotherTxt"></b></span><svg class="ba-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+      <div class="another" id="another" hidden></div>
       <button class="btn btn-primary" id="btnNext">Começar</button>
     </footer>
   </div>
@@ -672,7 +680,13 @@ function logoDarken(img) {
   while (k > 0.25 && 1.05 / (lumOf(ink.map(v => v * k)) + 0.05) < 4.5) k -= 0.05;
   return Math.round(k * 100) / 100;
 }
-function applyBrand(brand = {}) {
+// Cor de um site específico (ex.: Massagem com a paleta própria); sem cor própria, volta à do cliente
+function nicheColors() {
+  const base = S.link?.brand || {};
+  const n = S.niche && S.niche.id !== 'todos' ? niches().find(x => x.id === S.niche.id) : null;
+  applyColors(n && normHex(n.color) ? { color: n.color, secondary: n.secondary || '' } : base);
+}
+function applyColors(brand = {}) {
   const raw = normHex(brand.color) || '#0071E3';
   const accent = safeAccent(raw);
   let second = normHex(brand.secondary);
@@ -685,6 +699,10 @@ function applyBrand(brand = {}) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mix('#F5F5F7', raw, 0.035));
   const secondOk = normHex(brand.secondary) && colorDist(second, accent) >= 40;
   STAGE = [secondOk ? mix(second, '#ffffff', 0.3) : mix(accent, '#ffffff', 0.42), accent, mix(accent, '#000000', 0.32)];
+  try { FN.set(0, FN.vals[0]); } catch (e) {}
+}
+function applyBrand(brand = {}) {
+  applyColors(brand);
   if (brand.font) loadFont(brand.font);
   const name = S.link?.client_name || '';
   const initials = name.replace(/^(dra?\.?|dr\(a\)\.?)\s+/i, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '·';
@@ -762,7 +780,9 @@ function updateBar() {
   bar.hidden = ['sending', 'error'].includes(sc) || !S.link;
   back.hidden = ['welcome', 'summary'].includes(sc);
   bar.classList.toggle('is-summary', sc === 'summary');
-  $('#btnAnother').hidden = sc !== 'summary' || !nextNiche();
+  const nxs = sc === 'summary' ? nextNiches() : { list: [], more: false };
+  $('#another').hidden = !nxs.list.length;
+  bar.classList.toggle('is-tall', nxs.list.length + (nxs.more ? 1 : 0) > 2);
   let label = 'Continuar', ok = true;
   if (sc === 'welcome') label = 'Começar';
   else if (sc === 'period') ok = periodValid() && nicheValid();
@@ -852,7 +872,7 @@ function prettyUrl(u) { try { const x = new URL(u); return (x.host + x.pathname)
 function buildNiches() {
   const list = niches();
   $('#nicheBox').hidden = list.length < 2;
-  if (list.length < 2) { S.niche = list[0] ? { id: list[0].id, label: list[0].label, url: list[0].url || '' } : null; return; }
+  if (list.length < 2) { S.niche = list[0] ? { id: list[0].id, label: list[0].label, url: list[0].url || '' } : null; nicheColors(); return; }
   const all = [...list, { id: 'todos', label: 'Todos os sites (somados)', url: '' }];
   $('#nicheList').innerHTML = all.map(n => `<button type="button" class="opt" role="radio" aria-checked="false" data-id="${esc(n.id)}">
     <div class="o-txt"><b>${esc(n.label)}</b><span>${n.url ? esc(prettyUrl(n.url)) : 'Respostas somando os contatos de todos os sites'}</span></div><span class="radio"></span></button>`).join('');
@@ -862,7 +882,7 @@ function selectNiche(id, silent) {
   if (!n) return;
   S.niche = { id: n.id, label: n.label, url: n.url || '' };
   $$('#nicheList .opt').forEach(o => o.setAttribute('aria-checked', o.dataset.id === id));
-  renderPeriodLabel(); applyVocab(); updateBar();
+  nicheColors(); renderPeriodLabel(); applyVocab(); updateBar();
   if (!silent) { vibrate(8); saveDraft(); }
 }
 $('#nicheList').addEventListener('click', e => { const o = e.target.closest('.opt'); if (o) selectNiche(o.dataset.id); });
@@ -1507,17 +1527,31 @@ async function submit() {
 /* =========================================================
    Resumo
    ========================================================= */
-function nextNiche() {
-  const list = niches(); if (list.length < 2 || (S.link?.brand && S.link.brand.multi === false)) return null;
-  if (S.sent.includes('todos')) return null;
-  return list.find(n => !S.sent.includes(n.id)) || null;
+// Sites que ainda faltam: mostra até 3; se sobrar mais, um "Outros" leva para a etapa 1
+function nextNiches() {
+  const none = { list: [], more: false };
+  const list = niches(); if (list.length < 2 || (S.link?.brand && S.link.brand.multi === false)) return none;
+  if (S.sent.includes('todos')) return none;
+  const left = list.filter(n => !S.sent.includes(n.id));
+  return { list: left.slice(0, 3), more: left.length > 3 };
+}
+const ICO_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+const ICO_MORE = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></svg>';
+const ICO_GO = '<svg class="ba-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+function renderAnother() {
+  const { list, more } = nextNiches(); const box = $('#another');
+  const n = list.length + (more ? 1 : 0);
+  box.classList.toggle('is-list', n > 1);
+  const col = x => { const h = normHex(x.color) || normHex(S.link?.brand?.color); return h ? ` style="--c:${safeAccent(h)}"` : ''; };
+  box.innerHTML = (n > 1 ? '<div class="another-h">Registrar outro funil</div>' : '') +
+    list.map(x => `<button type="button" class="ba${x.label.length > 24 ? ' is-long' : ''}" data-id="${esc(x.id)}" aria-label="Registrar outro funil: ${esc(x.label)}"><span class="ba-ico"${col(x)}>${ICO_PLUS}</span><span class="ba-txt">${n > 1 ? '' : '<small>Registrar outro funil</small>'}<b>${esc(x.label)}</b></span>${ICO_GO}</button>`).join('') +
+    (more ? `<button type="button" class="ba is-other" data-id="" aria-label="Escolher outro site"><span class="ba-ico">${ICO_MORE}</span><span class="ba-txt"><b>Outros</b></span>${ICO_GO}</button>` : '');
 }
 function renderSummary() {
   const nl = S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'todos os sites' : S.niche.label) : '';
   $('#okTitle').innerHTML = nl ? `Você enviou os dados com sucesso para o nicho de <em>${esc(nl)}</em>` : 'Você enviou os dados com sucesso';
   $('#okSub').textContent = `${S.period.label} · ${periodText()}`;
-  const nx = nextNiche();
-  if (nx) { $('#btnAnotherTxt').textContent = nx.label; $('#btnAnother').dataset.id = nx.id; $('#btnAnother').classList.toggle('is-long', nx.label.length > 24); $('#btnAnother').setAttribute('aria-label', `Registrar outro funil: ${nx.label}`); }
+  renderAnother();
   const l = S.leads || 0, c = S.consultas || 0, t = S.tratamentos || 0;
   $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
@@ -1641,12 +1675,13 @@ function resetForAnother(nid) {
   for (let i = 0; i < 3; i++) FN.set(i, null);
   syncReasons(); activateQ(0);
   if (nid) selectNiche(nid, true);
+  else { S.niche = null; $$('#nicheList .opt').forEach(o => o.setAttribute('aria-checked', 'false')); nicheColors(); applyVocab(); }
   go('period', -1);
   window.scrollTo({ top: 0, behavior: 'auto' });
   const lb = (niches().find(n => n.id === nid) || {}).label;
-  if (lb) toast(`Agora os números de ${lb}`);
+  toast(lb ? `Agora os números de ${lb}` : 'Escolha o site que vai registrar');
 }
-$('#btnAnother').addEventListener('click', e => resetForAnother(e.currentTarget.dataset.id));
+$('#another').addEventListener('click', e => { const b = e.target.closest('.ba'); if (b) resetForAnother(b.dataset.id || null); });
 
 /* =========================================================
    Erros & inicialização
