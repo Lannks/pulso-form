@@ -286,7 +286,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
 /* ---------- summary ---------- */
 .sum-head{display:flex;align-items:center;gap:12px;margin-top:6px}
-.sum-sub{font-size:14px;color:var(--ink-2);margin-top:6px}
+.sum-sub{font-size:13.5px;color:var(--ink-2);margin-top:6px}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .tile{background:var(--fill);border-radius:16px;padding:12px 10px}
 .tile b{display:block;font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -305,13 +305,18 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .ok-banner b{display:block;font-family:var(--head);font-size:16px;line-height:1.3;font-weight:600;letter-spacing:-.01em;color:#0D652D;text-wrap:balance}
 .ok-banner b em{font-style:normal;font-weight:700}
 .ok-banner > div span{display:block;font-size:13px;color:#1F5130;margin-top:3px}
-.next-funnel{display:flex;flex-direction:column;gap:12px;margin-top:10px;padding:14px 16px 16px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1.5px var(--accent) inset}
-.next-funnel[hidden]{display:none}
-.next-funnel b{display:block;font-size:15px;font-weight:650;letter-spacing:-.01em}
-.next-funnel > div span{display:block;font-size:13px;line-height:1.4;color:var(--ink-2);margin-top:2px}
-.btn-next{width:100%;height:50px;font-size:15.5px;padding:0 16px;background:var(--accent);color:var(--accent-ink)}
-.btn-next span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.btn-next svg{flex:none}
+.bar.is-summary{flex-direction:column;gap:8px}
+.bar.is-summary .btn-primary{flex:none;width:100%}
+.btn-another{width:100%;height:auto;min-height:58px;padding-top:9px !important;padding-bottom:9px !important;flex:none;justify-content:flex-start;gap:12px;padding:0 14px 0 10px;text-align:left;background:var(--surface);color:var(--ink);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 70%,transparent) inset}
+.btn-another[hidden]{display:none}
+.btn-another .ba-ico{width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 14%,#fff);color:var(--accent)}
+.btn-another .ba-ico svg{width:18px;height:18px}
+.btn-another .ba-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.btn-another small{font-size:12px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+.btn-another b{font-size:15.5px;font-weight:650;line-height:1.25;letter-spacing:-.012em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-wrap:balance}
+.btn-another.is-long b{font-size:14px}
+.btn-another.is-long small{font-size:11.5px}
+.btn-another .ba-go{width:18px;height:18px;flex:none;color:var(--ink-3)}
 .sum-title{margin-top:24px;font-size:22px}
 .close-note{display:flex;gap:12px;align-items:center;margin-top:16px;padding:14px 16px;border-radius:18px;background:var(--surface);box-shadow:0 0 0 1px var(--line) inset}
 .close-note svg{width:26px;height:26px;color:var(--accent);flex:none}
@@ -533,10 +538,6 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
           <span class="ok-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
           <div><b id="okTitle">Dados enviados com sucesso</b><span id="okSub"></span></div>
         </div>
-        <div class="next-funnel" id="nextFunnel" hidden>
-          <div><b id="nextTitle">Falta registrar outro site</b><span id="nextSub"></span></div>
-          <button type="button" class="btn btn-next" id="btnAnother"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span id="btnAnotherTxt">Registrar outro funil</span></button>
-        </div>
         <h2 id="s-title" class="sum-title">Seu relatório de acompanhamento</h2>
         <p class="sum-sub" id="sumPeriod"></p>
         <div class="card" id="sumFunnel" style="padding:12px 10px 6px"></div>
@@ -562,6 +563,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
     <footer class="bar" id="bar" hidden>
       <button class="btn btn-back" id="btnBack" aria-label="Voltar" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button type="button" class="btn btn-another" id="btnAnother" hidden><span class="ba-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="ba-txt"><small>Registrar outro funil</small><b id="btnAnotherTxt"></b></span><svg class="ba-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
       <button class="btn btn-primary" id="btnNext">Começar</button>
     </footer>
   </div>
@@ -759,6 +761,8 @@ function updateBar() {
   const sc = S.screen;
   bar.hidden = ['sending', 'error'].includes(sc) || !S.link;
   back.hidden = ['welcome', 'summary'].includes(sc);
+  bar.classList.toggle('is-summary', sc === 'summary');
+  $('#btnAnother').hidden = sc !== 'summary' || !nextNiche();
   let label = 'Continuar', ok = true;
   if (sc === 'welcome') label = 'Começar';
   else if (sc === 'period') ok = periodValid() && nicheValid();
@@ -793,6 +797,7 @@ $('#btnBack').addEventListener('click', () => {
 const PERIODS = [
   { key: 'semana_atual', label: 'Semana atual' },
   { key: 'ultima_semana', label: 'Última semana' },
+  { key: 'ultimos_15', label: 'Últimos 15 dias' },
   { key: 'mes_atual', label: 'Mês atual' },
   { key: 'ultimo_mes', label: 'Último mês' },
   { key: 'personalizado', label: 'Personalizado' }
@@ -801,6 +806,7 @@ function periodRange(key) {
   const now = today(); const dow = (now.getDay() + 6) % 7;
   if (key === 'semana_atual') return [addDays(now, -dow), now];
   if (key === 'ultima_semana') { const s = addDays(now, -dow - 7); return [s, addDays(s, 6)]; }
+  if (key === 'ultimos_15') return [addDays(now, -14), now];
   if (key === 'mes_atual') return [new Date(now.getFullYear(), now.getMonth(), 1), now];
   if (key === 'ultimo_mes') return [new Date(now.getFullYear(), now.getMonth() - 1, 1), new Date(now.getFullYear(), now.getMonth(), 0)];
   return null;
@@ -1511,8 +1517,7 @@ function renderSummary() {
   $('#okTitle').innerHTML = nl ? `Você enviou os dados com sucesso para o nicho de <em>${esc(nl)}</em>` : 'Você enviou os dados com sucesso';
   $('#okSub').textContent = `${S.period.label} · ${periodText()}`;
   const nx = nextNiche();
-  $('#nextFunnel').hidden = !nx;
-  if (nx) { $('#nextTitle').textContent = `Falta o site de ${nx.label}`; $('#nextSub').textContent = 'Mesmo período. O site já vem marcado, é só preencher os números.'; $('#btnAnotherTxt').textContent = 'Registrar outro funil'; $('#btnAnother').dataset.id = nx.id; }
+  if (nx) { $('#btnAnotherTxt').textContent = nx.label; $('#btnAnother').dataset.id = nx.id; $('#btnAnother').classList.toggle('is-long', nx.label.length > 24); $('#btnAnother').setAttribute('aria-label', `Registrar outro funil: ${nx.label}`); }
   const l = S.leads || 0, c = S.consultas || 0, t = S.tratamentos || 0;
   $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
