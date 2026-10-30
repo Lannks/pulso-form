@@ -66,7 +66,9 @@ button{cursor:pointer;background:none;border:0}
 .mark img{width:100%;height:100%;object-fit:contain;background:#fff}
 .mark.has-img{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
 .logo-wide{height:26px;width:auto;max-width:170px;object-fit:contain;display:block}
-.brandrow.wide .mark,.brandrow.wide .brandname{display:none}
+.brandrow.wide .mark,.brandrow.wide .test-tag{margin-left:auto;padding:3px 8px;border-radius:6px;background:#FEF7E0;color:#8a5a00;font-size:11px;font-weight:700;letter-spacing:.06em;box-shadow:inset 0 0 0 1px #F9D97A}
+.test-tag + .stepcount{margin-left:10px}
+.brandname{display:none}
 .brandname{font-family:var(--head);font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stepcount{margin-left:auto;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap;transition:opacity .3s}
 .progress{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px;transition:opacity .4s var(--ease)}
@@ -99,12 +101,13 @@ h3{font-family:var(--head);font-size:17px;line-height:1.3;letter-spacing:-.012em
 
 /* ---------- welcome ---------- */
 .hero-brand{position:relative;margin:14px 0 26px;border-radius:24px;padding:26px 22px 22px;overflow:hidden;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.hero-brand::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,transparent),color-mix(in srgb,var(--accent-2) 22%,transparent) 70%,transparent);pointer-events:none}
+.hero-brand::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,transparent),color-mix(in srgb,var(--accent-2) 14%,transparent) 70%,transparent);pointer-events:none}
 .hero-brand::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent-2) 30%,transparent),transparent 70%);pointer-events:none}
 .hero-brand > *{position:relative}
-.hero-logo{display:flex;align-items:center;gap:12px;min-height:56px}
+.hero-logo{display:inline-flex;align-items:center;gap:12px;min-height:56px;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(10px) saturate(140%);backdrop-filter:blur(10px) saturate(140%);border-radius:16px;padding:12px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04),inset 0 0 0 1px rgba(255,255,255,.7)}
+.hero-logo img,.logo-wide,.mark.has-img img{filter:var(--logo-fx,none)}
 .hero-logo img.wide{max-height:58px;max-width:min(260px,80%);width:auto;object-fit:contain}
-.hero-logo img.square{width:64px;height:64px;border-radius:18px;object-fit:contain;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.hero-logo img.square{width:56px;height:56px;border-radius:14px;object-fit:contain;background:#fff}
 .hero-logo .mark{width:64px;height:64px;border-radius:18px;font-size:22px}
 .hero-logo b{font-family:var(--head);font-size:18px;font-weight:650;letter-spacing:-.01em;line-height:1.2}
 .hero-tag{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:6px 12px;border-radius:999px;background:var(--surface);color:var(--accent);font-size:12.5px;font-weight:600;box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -293,7 +296,20 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .meter-row .mr-v{font-weight:600;font-size:14px;min-width:96px;text-align:right}
 .quote{font-size:14.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap}
 .sec-title{font-size:13px;color:var(--ink-2);font-weight:500;margin-bottom:8px}
-.done-note{font-size:12.5px;color:var(--ink-3);text-align:center;margin-top:18px}
+.ok-banner{display:flex;gap:14px;align-items:center;padding:18px;border-radius:20px;background:color-mix(in srgb,var(--good) 12%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 30%,transparent);margin-top:6px}
+.ok-ico{width:44px;height:44px;border-radius:50%;background:#1E8E3E;color:#fff;display:grid;place-items:center;flex:none;animation:pop .5s var(--spring) both}
+.ok-ico svg{width:24px;height:24px}
+.ok-banner b{display:block;font-family:var(--head);font-size:19px;line-height:1.25;letter-spacing:-.01em;color:#0D652D}
+.ok-banner > div span{display:block;font-size:14px;color:#1F5130;margin-top:3px}
+.next-funnel{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding:16px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1.5px var(--accent) inset}
+.next-funnel[hidden]{display:none}
+.next-funnel b{display:block;font-size:15.5px;font-weight:650}
+.next-funnel > div span{display:block;font-size:13.5px;color:var(--ink-2);margin-top:2px}
+.btn-next{width:100%;background:var(--accent);color:var(--accent-ink)}
+.close-note{display:flex;gap:12px;align-items:center;margin-top:18px;padding:16px 18px;border-radius:18px;background:var(--surface);box-shadow:0 0 0 1px var(--line) inset}
+.close-note svg{width:28px;height:28px;color:var(--accent);flex:none}
+.close-note b{display:block;font-size:16.5px;font-weight:650;color:var(--ink)}
+.close-note span{display:block;font-size:14px;color:var(--ink-2);margin-top:2px}
 
 /* ---------- error ---------- */
 .err{text-align:center;padding-top:60px}
@@ -354,7 +370,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
           <li><div class="wl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
             <div><b>Relatório em PDF no final</b><span>Com o período que você escolher, pronto para baixar.</span></div></li>
         </ul>
-        <p class="privacy">Suas respostas vão direto para a equipe que gerencia suas campanhas e servem apenas para melhorar os resultados.</p>
+        <p class="privacy">Suas respostas vão direto para a equipe que gerencia suas campanhas e servem apenas para melhorar os resultados. Junto com elas registramos o tipo de aparelho e o fuso horário do envio. Nada fica salvo neste aparelho.</p>
       </section>
 
       <!-- 1 · PERÍODO -->
@@ -506,8 +522,15 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
       <!-- 6 · RESUMO -->
       <section class="screen" data-screen="summary" aria-labelledby="s-title">
-        <p class="kicker">Respostas enviadas</p>
-        <h2 id="s-title">Seu relatório de acompanhamento</h2>
+        <div class="ok-banner" role="status">
+          <span class="ok-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
+          <div><b id="okTitle">Dados enviados com sucesso</b><span id="okSub"></span></div>
+        </div>
+        <div class="next-funnel" id="nextFunnel" hidden>
+          <div><b>Falta registrar outro site</b><span id="nextSub"></span></div>
+          <button type="button" class="btn btn-next" id="btnAnother"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span id="btnAnotherTxt">Registrar outro funil</span></button>
+        </div>
+        <h2 id="s-title" style="margin-top:22px">Seu relatório de acompanhamento</h2>
         <p class="sum-sub" id="sumPeriod"></p>
         <div class="card" id="sumFunnel" style="padding:12px 10px 6px"></div>
         <div class="tiles" id="sumTiles"></div>
@@ -517,7 +540,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
           <div id="sumReasons"></div>
           <div id="sumComment"></div>
         </div>
-        <p class="done-note">Você já pode fechar esta página. Obrigado pela parceria.</p>
+        <div class="close-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg><div><b>Pronto! Você já pode fechar esta página.</b><span>Obrigado pela parceria.</span></div></div>
       </section>
 
       <!-- ERRO -->
@@ -574,9 +597,10 @@ const S = {
   leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '',
   quality: null, income: null,
   reasons: [], reasonOther: '', comment: '',
-  fq: 0, finalePlayed: false, submitted: false
+  fq: 0, finalePlayed: false, submitted: false, sent: []
 };
 const DRAFT_KEY = 'pulso-draft-' + (TOKEN || 'demo');
+let IS_TEST = params.has('teste');
 
 /* =========================================================
    Utilidades
@@ -614,6 +638,31 @@ function loadFont(name) {
   document.head.appendChild(l);
   root.style.setProperty('--head', `"${name}", ${getComputedStyle(root).getPropertyValue('--display')}`);
 }
+
+// Mede a cor média do desenho do logo (ignora transparência e fundo branco)
+function logoInk(img) {
+  const S = 64, cv = document.createElement('canvas');
+  const k = Math.min(1, S / Math.max(img.naturalWidth || S, img.naturalHeight || S));
+  cv.width = Math.max(1, Math.round((img.naturalWidth || S) * k)); cv.height = Math.max(1, Math.round((img.naturalHeight || S) * k));
+  const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, cv.width, cv.height);
+  let d; try { d = ctx.getImageData(0, 0, cv.width, cv.height).data; } catch (e) { return null; }
+  let r = 0, g = 0, b = 0, w = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const a = d[i + 3] / 255; if (a < 0.35) continue;
+    const L = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255; if (L > 0.94) continue;
+    r += d[i] * a; g += d[i + 1] * a; b += d[i + 2] * a; w += a;
+  }
+  if (w < 4) return null;
+  return [r / w, g / w, b / w];
+}
+// Fator de escurecimento para o logo ter contraste >= 3:1 sobre branco
+function logoDarken(img) {
+  const ink = logoInk(img); if (!ink) return 1;
+  const lumOf = c => { const l = c.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; };
+  let k = 1;
+  while (k > 0.25 && 1.05 / (lumOf(ink.map(v => v * k)) + 0.05) < 4.5) k -= 0.05;
+  return Math.round(k * 100) / 100;
+}
 function applyBrand(brand = {}) {
   const raw = normHex(brand.color) || '#0071E3';
   const accent = safeAccent(raw);
@@ -626,7 +675,7 @@ function applyBrand(brand = {}) {
   root.style.setProperty('--bg', mix('#F5F5F7', raw, 0.035));
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mix('#F5F5F7', raw, 0.035));
   const secondOk = normHex(brand.secondary) && colorDist(second, accent) >= 40;
-  STAGE = [secondOk ? second : mix(accent, '#ffffff', 0.42), accent, mix(accent, '#000000', 0.32)];
+  STAGE = [secondOk ? mix(second, '#ffffff', 0.3) : mix(accent, '#ffffff', 0.42), accent, mix(accent, '#000000', 0.32)];
   if (brand.font) loadFont(brand.font);
   const name = S.link?.client_name || '';
   const initials = name.replace(/^(dra?\.?|dr\(a\)\.?)\s+/i, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '·';
@@ -636,6 +685,8 @@ function applyBrand(brand = {}) {
     const img = new Image();
     img.alt = name;
     img.onload = () => {
+      const kd = logoDarken(img);
+      if (kd < 1) root.style.setProperty('--logo-fx', `brightness(${kd}) saturate(1.25)`);
       const wide = img.naturalWidth / Math.max(1, img.naturalHeight) > 1.6;
       img.className = wide ? 'wide' : 'square';
       hero.innerHTML = ''; hero.appendChild(img);
@@ -1066,21 +1117,21 @@ const VOC = {
     t: ['dos leads agendaram avaliação', 'das avaliações viraram tratamento', 'dos leads viraram tratamento'], p: ['lead para avaliação', 'avaliação para tratamento', 'lead para tratamento']
   },
   geral: {
-    f: ['leads', 'agendamentos', 'fechamentos'], s2: 'agendamentos', who: 'clientes',
-    q2: 'Quantos desses leads agendaram (aula, sessão ou avaliação)?', q2h: 'Some todos os agendamentos, mesmo os que ainda não aconteceram. Ex.: 12',
-    q3: 'Algum desses clientes fechou plano, pacote ou tratamento?', q3h: 'Ex.: plano de pilates, pacote de massagem ou tratamento de fisioterapia.',
-    q3n: 'Quantos clientes?', q3d: 'O que foi fechado? (opcional)', q3p: 'Ex.: 2 planos de pilates, 1 pacote de massagem',
-    d2: 'Agendaram', d3: 'Fecharam plano ou pacote',
-    qh: 'Pense em quem chega com interesse real em agendar. Ex.: <q>boa</q> se a maioria pergunta horários e valores e acaba marcando.',
+    f: ['leads', 'qualificados', 'fechamentos'], s2: 'contatos qualificados', who: 'clientes',
+    q2: 'Quantos desses leads eram contatos qualificados?', q2h: 'Conte quem tinha perfil e interesse real: pediu orçamento, agendou, visitou ou seguiu na conversa. Ex.: 12',
+    q3: 'Algum desses contatos virou cliente (fechou ou comprou)?', q3h: 'Ex.: fechou serviço, plano, pacote ou pedido.',
+    q3n: 'Quantos clientes?', q3d: 'O que foi fechado? (opcional)', q3p: 'Ex.: 2 planos, 1 pacote',
+    d2: 'Contatos qualificados', d3: 'Fecharam',
+    qh: 'Pense no perfil de quem chegou: interesse real, região e o que procurava. Ex.: <q>boa</q> se a maioria tinha perfil e seguiu a conversa.',
     ih: 'Sua percepção pelas conversas: o valor é um obstáculo? Ex.: <q>média</q> se metade acha caro.',
-    qn: ['Muitos curiosos ou sem perfil.', 'Parte quer agendar; a outra parte só pesquisa preço.', 'A maioria chega decidida a agendar.'],
+    qn: ['Muitos curiosos ou sem perfil.', 'Parte tem perfil; a outra parte só pesquisa.', 'A maioria chega com perfil e interesse real.'],
     inn: ['A maioria acha o valor alto.', 'Parte aceita o valor, parte negocia ou desiste.', 'O valor raramente é um obstáculo.'],
-    renda: 'Acham o valor alto', servico: ['Outro serviço', 'Buscam algo que não oferecemos'], conv: ['Plano / benefício', 'Querem usar plano, convênio ou Wellhub'],
-    cex: '<q>Muitos perguntam se aceita Wellhub</q>, <q>Chegaram vários de outra região</q>',
-    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Perguntam por convênio ou Wellhub', 'Somem depois do primeiro contato', 'Procuram outro serviço', 'Horários não batem'],
-    lede: 'quantos contatos chegaram, quantos agendaram e quantos fecharam', why: 'atrair clientes com o perfil certo',
-    r1: 'dos leads agendaram', r2: 'dos agendamentos viraram fechamento',
-    t: ['dos leads agendaram', 'dos agendamentos fecharam', 'dos leads fecharam'], p: ['lead para agendamento', 'agendamento para fechamento', 'lead para fechamento']
+    renda: 'Acham o valor alto', servico: ['Outro serviço', 'Buscam algo que não oferecemos'], conv: ['Plano / benefício', 'Querem usar plano, convênio ou benefício'],
+    cex: '<q>Muitos pedem só orçamento e somem</q>, <q>Chegaram vários de outra região</q>',
+    quick: ['Perguntam só o preço', 'Muitos de outras regiões', 'Procuram outro serviço', 'Somem depois do primeiro contato', 'Pedem só orçamento', 'Demoram para responder'],
+    lede: 'quantos contatos chegaram, quantos tinham perfil e quantos viraram clientes', why: 'atrair contatos com o perfil certo',
+    r1: 'dos leads eram qualificados', r2: 'dos qualificados fecharam',
+    t: ['dos leads eram qualificados', 'dos qualificados fecharam', 'dos leads fecharam'], p: ['lead para qualificado', 'qualificado para fechamento', 'lead para fechamento']
   }
 };
 function guessVocab(txt) {
@@ -1383,6 +1434,16 @@ function renderSideExtra() {
 /* =========================================================
    Envio
    ========================================================= */
+function origin() {
+  const ua = navigator.userAgent || '';
+  const os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad|iPod/i.test(ua) ? 'iOS' : /Windows/i.test(ua) ? 'Windows' : /Mac OS X/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : 'Outro';
+  const app = /Instagram/i.test(ua) ? 'Instagram' : /FBAN|FBAV|FB_IAB/i.test(ua) ? 'Facebook' : /WhatsApp/i.test(ua) ? 'WhatsApp' : '';
+  const br = /Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung Internet' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'Navegador';
+  const mobile = /Mobi|Android|iPhone|iPod/i.test(ua) || (navigator.maxTouchPoints > 1 && innerWidth < 900);
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  let ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+  return { device: mobile ? 'Celular' : (/iPad|Tablet/i.test(ua) ? 'Tablet' : 'Computador'), os, browser: app ? `${app} (navegador interno)` : br, tz, lang: navigator.language || '', screen: `${screen.width}x${screen.height}`, ref, page: location.host + location.pathname, at: new Date().toISOString() };
+}
 function payload() {
   return {
     version: 1,
@@ -1393,6 +1454,8 @@ function payload() {
     quality: S.quality, income: S.income, quality_score: S.qualityScore || null, income_score: S.incomeScore || null,
     reasons: S.reasons, reason_other: S.reasons.includes('outro') ? S.reasonOther.trim() : '',
     comment: S.comment.trim(),
+    origin: origin(),
+    test: IS_TEST,
     submitted_at: new Date().toISOString()
   };
 }
@@ -1415,6 +1478,7 @@ async function submit() {
     await Promise.all([send, anim]);
     bar.style.strokeDashoffset = 0; $('#ring').classList.add('done');
     S.submitted = true; clearDraft();
+    if (S.niche) S.sent.push(S.niche.id);
     await new Promise(r => setTimeout(r, RM ? 0 : 900));
     renderSummary(); go('summary');
   } catch (e) {
@@ -1430,7 +1494,18 @@ async function submit() {
 /* =========================================================
    Resumo
    ========================================================= */
+function nextNiche() {
+  const list = niches(); if (list.length < 2 || (S.link?.brand && S.link.brand.multi === false)) return null;
+  if (S.sent.includes('todos')) return null;
+  return list.find(n => !S.sent.includes(n.id)) || null;
+}
 function renderSummary() {
+  const nl = S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'todos os sites' : S.niche.label) : '';
+  $('#okTitle').textContent = nl ? `Você enviou os dados com sucesso para o nicho de ${nl}` : 'Você enviou os dados com sucesso';
+  $('#okSub').textContent = `${S.period.label} · ${periodText()}`;
+  const nx = nextNiche();
+  $('#nextFunnel').hidden = !nx;
+  if (nx) { $('#nextSub').textContent = `Registre também os números de ${nx.label}, no mesmo período.`; $('#btnAnotherTxt').textContent = `Registrar outro funil · ${nx.label}`; $('#btnAnother').dataset.id = nx.id; }
   const l = S.leads || 0, c = S.consultas || 0, t = S.tratamentos || 0;
   $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
@@ -1536,38 +1611,11 @@ async function makePDF() {
 /* =========================================================
    Rascunho local (não perde as respostas se recarregar)
    ========================================================= */
-function saveDraft() {
-  if (S.submitted || !S.link) return;
-  try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({
-      period: S.period, niche: S.niche, leads: S.leads, consultas: S.consultas, tratYes: S.tratYes, tratamentos: S.tratamentos, tratDesc: $('#tratDesc').value,
-      quality: S.quality, income: S.income, qualityScore: S.qualityScore, incomeScore: S.incomeScore, reasons: S.reasons, reasonOther: S.reasonOther, comment: $('#comment').value,
-      d: [S._done0, S._done1, S._done2]
-    }));
-  } catch (e) {}
-}
-function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
-function restoreDraft() {
-  let d; try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) {}
-  if (!d) return;
-  if (d.period?.key) {
-    if (d.period.key === 'personalizado') { $('#cStart').value = d.period.start || ''; $('#cEnd').value = d.period.end || ''; }
-    selectPeriod(d.period.key);
-  }
-  if (d.niche) selectNiche(d.niche.id, true);
-  const setNum = (k, v) => { if (v != null) $(`.num[data-key="${k}"] .num-input`).value = v; };
-  setNum('leads', d.leads); setNum('consultas', d.consultas); setNum('tratamentos', d.tratamentos || '');
-  $('#tratDesc').value = d.tratDesc || '';
-  if (d.tratYes != null) { S.tratYes = d.tratYes; $$('.seg button').forEach(x => x.setAttribute('aria-pressed', (x.dataset.yes === '1') === d.tratYes)); $('#tratReveal').classList.toggle('open', !!d.tratYes); }
-  if (d.d?.[0] && d.leads != null) commitQ(0);
-  if (d.d?.[1] && d.consultas != null) commitQ(1);
-  if (d.d?.[2] && d.tratYes != null) commitQ(2);
-  const next = [0, 1, 2].find(k => !isAnswered(k)); activateQ(next == null ? 3 : next);
-  if (next == null) { S.finalePlayed = true; insight(); }
-  ['quality', 'income'].forEach(k => { const n = d[k + 'Score']; if (n) $(`.thermo[data-key="${k}"]`)._select(n, true); });
-  S.reasons = d.reasons || []; S.reasonOther = d.reasonOther || ''; $('#otherTxt').value = S.reasonOther; syncReasons();
-  $('#comment').value = d.comment || ''; onComment();
-}
+// Sem rascunho: cada sessão começa do zero e nada fica salvo no aparelho.
+function saveDraft() {}
+function restoreDraft() {}
+function clearDraft() { try { Object.keys(localStorage).filter(k => k.startsWith('pulso-draft-')).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+clearDraft();
 
 /* =========================================================
    Erros & inicialização
@@ -1605,6 +1653,8 @@ async function init() {
       S.link = data;
     }
   } catch (e) { return fail('network'); }
+  if (S.link.brand?.test) IS_TEST = true;
+  if (IS_TEST) $('#stepcount').insertAdjacentHTML('beforebegin', '<span class="test-tag">TESTE</span>');
   applyBrand(S.link.brand || {});
   document.title = `Relatório de acompanhamento · ${S.link.client_name}`;
   applyVocab();
