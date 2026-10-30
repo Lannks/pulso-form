@@ -286,6 +286,12 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 
 /* ---------- summary ---------- */
 .sum-head{display:flex;align-items:center;gap:12px;margin-top:6px}
+.meta-row{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 16px;border-radius:16px;background:var(--surface)}
+.meta-ico{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--fill);color:var(--ink-2)}
+.meta-ico svg{width:18px;height:18px}
+.meta-t{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.25}
+.meta-t small{display:block;font-size:12px;font-weight:400;color:var(--ink-2);margin-top:1px}
+.meta-row b{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
 .sum-sub{font-size:13.5px;color:var(--ink-2);margin-top:6px}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .tile{background:var(--fill);border-radius:16px;padding:12px 10px}
@@ -309,6 +315,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .bar.is-summary .btn-primary{flex:none;width:100%}
 .another{width:100%;flex:none;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 60%,transparent) inset;overflow:hidden}
 .another[hidden]{display:none}
+.q[hidden],.meta-row[hidden]{display:none !important}
 .another-h{padding:10px 14px 2px;font-size:12px;font-weight:500;color:var(--ink-2)}
 .ba{width:100%;min-height:58px;display:flex;align-items:center;gap:12px;padding:9px 14px 9px 10px;text-align:left;color:var(--ink);transition:background .2s}
 .ba:active{background:var(--fill)}
@@ -479,6 +486,22 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
             </div>
             <div class="q-done-row"><span class="ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span><span class="lbl">Seguiram para tratamento</span><span class="val"></span><span class="edit">Editar</span></div>
           </article>
+
+          <article class="q is-todo q-meta" data-q="3" hidden>
+            <div class="q-head"><span class="q-index">4</span><div>
+              <h3>E quantos leads chegaram pelo Facebook ou Instagram?</h3>
+              <p class="hint">Conte os contatos que vieram dos anúncios do Meta (Facebook ou Instagram) no mesmo período. Não some com os do Google. Ex.: 20</p>
+            </div></div>
+            <div class="q-body">
+              <div class="num" data-key="metaLeads">
+                <button class="num-btn" data-d="-1" aria-label="Diminuir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+                <input class="num-input" inputmode="numeric" pattern="[0-9]*" placeholder="0" aria-label="Quantidade de leads do Facebook e Instagram" autocomplete="off">
+                <button class="num-btn" data-d="1" aria-label="Aumentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+              </div>
+              <p class="q-error"></p>
+            </div>
+            <div class="q-done-row"><span class="ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span><span class="lbl">Facebook/Instagram</span><span class="val"></span><span class="edit">Editar</span></div>
+          </article>
         </div>
       </section>
 
@@ -549,6 +572,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         <h2 id="s-title" class="sum-title">Seu relatório de acompanhamento</h2>
         <p class="sum-sub" id="sumPeriod"></p>
         <div class="card" id="sumFunnel" style="padding:12px 10px 6px"></div>
+        <div class="meta-row" id="sumMeta" hidden></div>
         <div class="tiles" id="sumTiles"></div>
         <div hidden>
           <div class="meter-row" id="sumQuality"></div>
@@ -614,6 +638,7 @@ const S = {
   leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '',
   quality: null, income: null,
   reasons: [], reasonOther: '', comment: '',
+  metaLeads: null,
   fq: 0, finalePlayed: false, submitted: false, sent: []
 };
 const DRAFT_KEY = 'pulso-draft-' + (TOKEN || 'demo');
@@ -807,7 +832,7 @@ $('#btnNext').addEventListener('click', () => {
 });
 $('#btnBack').addEventListener('click', () => {
   const i = SCREENS.indexOf(S.screen);
-  if (S.screen === 'funnel' && S.fq > 0 && S.fq < 3) { activateQ(S.fq - 1); return; }
+  if (S.screen === 'funnel' && S.fq > 0 && S.fq < NQ()) { activateQ(S.fq - 1); return; }
   if (i > 0) go(SCREENS[i - 1], -1);
 });
 
@@ -1237,7 +1262,9 @@ function insight() { return;
 }
 
 /* ---------- perguntas do funil ---------- */
-const Q_KEYS = ['leads', 'consultas', 'tratamentos'];
+const Q_KEYS = ['leads', 'consultas', 'tratamentos', 'metaLeads'];
+const askMeta = () => !!S.link?.brand?.askMeta;
+const NQ = () => askMeta() ? 4 : 3;
 function qEl(i) { return $(`.q[data-q="${i}"]`); }
 function activateQ(i) {
   S.fq = i;
@@ -1247,9 +1274,9 @@ function activateQ(i) {
     q.classList.toggle('is-done', k !== i && isDone);
     q.classList.toggle('is-todo', k !== i && !isDone);
   });
-  if (i < 3) {
+  if (i < NQ()) {
     const inp = $('.num-input', qEl(i));
-    if (inp && (i < 2 || S.tratYes)) setTimeout(() => { if (window.innerWidth >= 920 || i > 0) inp.focus({ preventScroll: true }); }, 280);
+    if (inp && (i !== 2 || S.tratYes)) setTimeout(() => { if (window.innerWidth >= 920 || i > 0) inp.focus({ preventScroll: true }); }, 280);
     qEl(i).scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' });
   }
   updateBar();
@@ -1257,14 +1284,16 @@ function activateQ(i) {
 function isAnswered(k) {
   if (k === 0) return S.leads != null && S._done0;
   if (k === 1) return S.consultas != null && S._done1;
+  if (k === 3) return askMeta() && S.metaLeads != null && S._done3;
   return S.tratYes != null && S._done2;
 }
 function readNum(key) { const v = $(`.num[data-key="${key}"] .num-input`).value.replace(/\D/g, ''); return v === '' ? null : Math.min(99999, parseInt(v, 10)); }
 function qError(i, msg) { $('.q-error', qEl(i)).textContent = msg || ''; }
 function funnelStepReady() {
-  if (S.fq >= 3) return true;
+  if (S.fq >= NQ()) return true;
   if (S.fq === 0) return readNum('leads') != null;
   if (S.fq === 1) return readNum('consultas') != null;
+  if (S.fq === 3) return readNum('metaLeads') != null;
   if (S.tratYes === false) return true;
   return S.tratYes === true && (readNum('tratamentos') ?? 0) > 0;
 }
@@ -1277,6 +1306,7 @@ function validateQ(i) {
     const v = readNum('consultas'); if (v == null) return 'Informe um número (pode ser 0).';
     if (v > (S.leads ?? 0)) return `Não pode ser maior que o número de leads (${S.leads}).`;
   }
+  if (i === 3 && readNum('metaLeads') == null) return 'Informe um número (pode ser 0).';
   if (i === 2 && S.tratYes) {
     const v = readNum('tratamentos') ?? 0; if (v < 1) return `Informe quantos ${W.who}.`;
     if (v > (S.consultas ?? 0)) return `Não pode ser maior que o número de ${W.s2} (${S.consultas}).`;
@@ -1291,17 +1321,18 @@ function commitQ(i) {
     S._done2 = true; FN.set(2, S.tratamentos);
     $('.val', qEl(2)).textContent = S.tratYes ? S.tratamentos.toLocaleString('pt-BR') : 'Ainda não';
   }
+  if (i === 3) { S.metaLeads = readNum('metaLeads'); S._done3 = true; $('.val', qEl(3)).textContent = S.metaLeads.toLocaleString('pt-BR'); }
   vibrate(12);
   saveDraft();
 }
 async function funnelNext() {
-  if (S.fq >= 3) return go('quality');
+  if (S.fq >= NQ()) return go('quality');
   const i = S.fq; const err = validateQ(i);
   qError(i, err); if (err) { $('.num-input', qEl(i))?.classList.add('bump'); return; }
   commitQ(i);
-  const nextUndone = [0, 1, 2].find(k => !isAnswered(k));
+  const nextUndone = [0, 1, 2, 3].slice(0, NQ()).find(k => !isAnswered(k));
   if (nextUndone == null) {
-    activateQ(3);
+    activateQ(NQ());
     $('#btnNext').disabled = true;
     if (!S.finalePlayed) { S.finalePlayed = true; await new Promise(r => setTimeout(r, 420)); await FN.finale(); }
     insight();
@@ -1484,6 +1515,7 @@ function payload() {
     niche: S.niche,
     vocab: S.vocab || 'medico',
     leads: S.leads, consultas: S.consultas, tratamentos: S.tratamentos || 0, tratamentos_desc: S.tratDesc,
+    meta_leads: askMeta() ? S.metaLeads : null,
     quality: S.quality, income: S.income, quality_score: S.qualityScore || null, income_score: S.incomeScore || null,
     reasons: S.reasons, reason_other: S.reasons.includes('outro') ? S.reasonOther.trim() : '',
     comment: S.comment.trim(),
@@ -1555,6 +1587,8 @@ function renderSummary() {
   const l = S.leads || 0, c = S.consultas || 0, t = S.tratamentos || 0;
   $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
+  $('#sumMeta').hidden = !(askMeta() && S.metaLeads != null);
+  if (askMeta() && S.metaLeads != null) $('#sumMeta').innerHTML = `<span class="meta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8" fill="currentColor"/></svg></span><span class="meta-t">Leads do Facebook/Instagram<small>contados à parte do funil do Google</small></span><b>${S.metaLeads.toLocaleString('pt-BR')}</b>`;
   $('#sumTiles').innerHTML = [
     [pct(c, l) + '%', W.t[0]],
     [pct(t, c) + '%', W.t[1]],
@@ -1582,7 +1616,7 @@ async function makePDF() {
     if (!window.jspdf) await loadScript(JSPDF_URL);
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-    const W = 595.28, M = 48, R = W - M;
+    const PW = 595.28, M = 48, R = PW - M; // (não usar W aqui: W é o vocabulário)
     const accent = getComputedStyle(root).getPropertyValue('--accent').trim() || '#0071E3';
     const rgb = h => hexToRgb(h);
     const INK = [29, 29, 31], INK2 = [110, 110, 115], LINE = [229, 229, 234], FILL = [245, 245, 247];
@@ -1626,6 +1660,13 @@ async function makePDF() {
       }
     });
     y = y0 + total;
+    if (askMeta() && S.metaLeads != null) {
+      y += 22; doc.setFillColor(...FILL); doc.roundedRect(M, y, R - M, 40, 10, 10, 'F');
+      txt('Leads do Facebook/Instagram', M + 14, y + 17, { bold: true, size: 10.5 });
+      txt('contados à parte do funil do Google', M + 14, y + 30, { size: 8.5, color: INK2 });
+      txt(S.metaLeads.toLocaleString('pt-BR'), R - 14, y + 26, { bold: true, size: 18, align: 'right' });
+      y += 40;
+    }
 
     // indicadores
     y += 22;
@@ -1649,7 +1690,7 @@ async function makePDF() {
     doc.save(`relatorio-acompanhamento-${slug}-${S.period.start}-a-${S.period.end}.pdf`);
     toast('PDF baixado');
   } catch (e) {
-    toast('Não deu para gerar o PDF aqui. Abrindo a impressão…');
+    console.error(e); toast('Não deu para gerar o PDF aqui. Abrindo a impressão…');
     setTimeout(() => window.print(), 600);
   } finally { btn.disabled = false; btn.innerHTML = html; }
 }
@@ -1665,7 +1706,7 @@ clearDraft();
 
 // "Registrar outro funil": volta para a etapa 1 com o mesmo período e o próximo site já marcado
 function resetForAnother(nid) {
-  Object.assign(S, { leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '', quality: null, income: null, qualityScore: null, incomeScore: null, reasons: [], reasonOther: '', comment: '', fq: 0, finalePlayed: false, submitted: false, _done0: false, _done1: false, _done2: false });
+  Object.assign(S, { leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '', quality: null, income: null, qualityScore: null, incomeScore: null, reasons: [], reasonOther: '', comment: '', metaLeads: null, fq: 0, finalePlayed: false, submitted: false, _done0: false, _done1: false, _done2: false, _done3: false });
   $$('.num-input').forEach(i => { i.value = ''; });
   $$('.seg button').forEach(b => b.setAttribute('aria-pressed', 'false'));
   $('#tratReveal').classList.remove('open'); $('#tratDesc').value = '';
@@ -1722,6 +1763,7 @@ async function init() {
   if (S.link.brand?.test) IS_TEST = true;
   if (IS_TEST) $('#stepcount').insertAdjacentHTML('beforebegin', '<span class="test-tag">TESTE</span>');
   applyBrand(S.link.brand || {});
+  $('.q-meta').hidden = !askMeta();
   document.title = `Relatório de acompanhamento · ${S.link.client_name}`;
   applyVocab();
   $('#loader').remove();
