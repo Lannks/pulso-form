@@ -151,6 +151,20 @@ h3{font-family:var(--head);font-size:17px;line-height:1.3;letter-spacing:-.012em
 .input{width:100%;padding:13px 14px;border-radius:14px;border:0;background:var(--surface);box-shadow:0 0 0 1px var(--line) inset;font-size:16px;outline:none;transition:box-shadow .2s}
 .input:focus{box-shadow:0 0 0 2px var(--accent) inset}
 textarea.input{resize:none;min-height:128px;line-height:1.5}
+.src{margin-top:20px}
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.src-opt{display:flex;align-items:center;gap:10px;min-width:0;padding:11px 10px 11px 11px;border-radius:14px;background:var(--surface);box-shadow:0 0 0 1px var(--line) inset;text-align:left;transition:background .25s, box-shadow .25s, transform .15s}
+.src-opt:active{transform:scale(.98)}
+.src-opt .s-ico{width:34px;height:34px;border-radius:10px;background:var(--fill);color:var(--ink-2);display:grid;place-items:center;flex:none;transition:background .25s, color .25s}
+.src-opt .s-ico svg{width:18px;height:18px}
+.src-opt .s-txt{flex:1;min-width:0}
+.src-opt b{display:block;font-weight:600;font-size:15px;line-height:1.2}
+.src-opt small{display:block;font-size:12px;line-height:1.25;color:var(--ink-2);margin-top:2px}
+.src-opt[aria-checked="true"]{background:var(--accent-soft);box-shadow:0 0 0 1.5px var(--accent) inset}
+.src-opt[aria-checked="true"] .s-ico{background:var(--accent);color:var(--accent-ink)}
+.src .field{margin-top:10px}
+.per{margin-top:28px}
+.per .dd{margin-top:14px}
 .niche{margin-top:30px}
 .niche[hidden]{display:none}
 .opts{margin-top:14px;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1px var(--line) inset;padding:4px}
@@ -403,8 +417,17 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
       <!-- 1 · PERÍODO -->
       <section class="screen" data-screen="period" aria-labelledby="p-title">
         <p class="kicker">Etapa 1 de 4</p>
-        <h2 id="p-title">Qual período você vai avaliar?</h2>
-        <p class="hint">Considere só os contatos que chegaram pelo Google nesse intervalo. Ex.: se você responde toda segunda, escolha <q>Última semana</q>.</p>
+        <h2 id="p-title">Origem e período dos leads</h2>
+        <div class="src" id="srcBox">
+          <h3>De onde vieram esses leads?</h3>
+          <div class="src-grid" id="srcList" role="radiogroup" aria-label="Origem dos leads"></div>
+          <div class="reveal" id="srcReveal"><div>
+            <div class="field"><label for="srcOther">Qual origem?</label><input class="input" id="srcOther" maxlength="60" placeholder="Ex.: indicação, TikTok, panfleto" autocomplete="off" tabindex="-1"></div>
+          </div></div>
+        </div>
+        <div class="per">
+        <h3>Qual período você vai avaliar?</h3>
+        <p class="hint" id="pHint">Considere só os contatos da origem escolhida acima nesse intervalo. Ex.: se você responde toda segunda, escolha <q>Última semana</q>.</p>
         <div class="dd" id="dd">
           <button class="dd-btn" id="ddBtn" aria-haspopup="listbox" aria-expanded="false">
             <div class="dd-val"><b id="ddLabel">Escolha o período</b><span id="ddRange">Toque para ver as opções</span></div>
@@ -415,6 +438,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         <div class="custom-range" id="customRange" hidden>
           <div class="field"><label for="cStart">De</label><input class="input" type="date" id="cStart"></div>
           <div class="field"><label for="cEnd">Até</label><input class="input" type="date" id="cEnd"></div>
+        </div>
         </div>
         <div class="niche" id="nicheBox" hidden>
           <h3>Esses leads são de qual site/nicho?</h3>
@@ -432,8 +456,8 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         <div class="qstack" id="qstack">
           <article class="q is-active" data-q="0">
             <div class="q-head"><span class="q-index">1</span><div>
-              <h3>Quantos leads chegaram com a mensagem inicial do Google?</h3>
-              <p class="hint">Conte os contatos que chegaram no WhatsApp com a mensagem automática do anúncio, como <q>Olá, vi seu anúncio no Google…</q>. Ex.: 48</p>
+              <h3 id="q1t">Quantos leads chegaram com a mensagem inicial do Google?</h3>
+              <p class="hint" id="q1h">Conte os contatos que chegaram no WhatsApp com a mensagem automática do anúncio, como <q>Olá, vi seu anúncio no Google…</q>. Ex.: 48</p>
             </div></div>
             <div class="q-body">
               <div class="num" data-key="leads">
@@ -635,6 +659,7 @@ const S = {
   link: null,
   period: { key: null, start: null, end: null, label: '' },
   niche: null,
+  src: null, srcOther: '',
   leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '',
   quality: null, income: null,
   reasons: [], reasonOther: '', comment: '',
@@ -810,7 +835,7 @@ function updateBar() {
   bar.classList.toggle('is-tall', nxs.list.length + (nxs.more ? 1 : 0) > 2);
   let label = 'Continuar', ok = true;
   if (sc === 'welcome') label = 'Começar';
-  else if (sc === 'period') ok = periodValid() && nicheValid();
+  else if (sc === 'period') ok = sourceValid() && periodValid() && nicheValid();
   else if (sc === 'funnel') ok = funnelStepReady();
   else if (sc === 'quality') ok = S.quality != null && S.income != null && S.reasons.length > 0 && (!S.reasons.includes('outro') || S.reasonOther.trim().length >= 3);
   else if (sc === 'comment') label = 'Enviar respostas';
@@ -824,7 +849,7 @@ function updateBar() {
 $('#btnNext').addEventListener('click', () => {
   const sc = S.screen;
   if (sc === 'welcome') return go('period');
-  if (sc === 'period') { if (!periodValid() || !nicheValid()) return; return go('funnel'); }
+  if (sc === 'period') { if (!sourceValid() || !periodValid() || !nicheValid()) return; return go('funnel'); }
   if (sc === 'funnel') return funnelNext();
   if (sc === 'quality') return go('comment');
   if (sc === 'comment') return submit();
@@ -835,6 +860,54 @@ $('#btnBack').addEventListener('click', () => {
   if (S.screen === 'funnel' && S.fq > 0 && S.fq < NQ()) { activateQ(S.fq - 1); return; }
   if (i > 0) go(SCREENS[i - 1], -1);
 });
+
+/* =========================================================
+   Origem dos leads
+   ========================================================= */
+const SV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+const SOURCES = [
+  { key: 'google', label: 'Google', sub: 'Anúncios na pesquisa', ico: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>' },
+  { key: 'meta', label: 'Meta', sub: 'Facebook e Instagram', ico: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9.5" r="2.4"/><path d="M16 14.3a4.5 4.5 0 0 1 4.8 4.7"/>' },
+  { key: 'direto', label: 'Direto', sub: 'Sem mensagem do anúncio', ico: '<path d="M20.5 12a8.5 8.5 0 0 1-12.3 7.6L3.5 20.5l1-4.4A8.5 8.5 0 1 1 20.5 12z"/>' },
+  { key: 'outro', label: 'Outro', sub: 'Escrever a origem', ico: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>' }
+];
+function buildSources() {
+  $('#srcList').innerHTML = SOURCES.map(x => `<button type="button" class="src-opt" role="radio" aria-checked="false" data-key="${x.key}"><span class="s-ico">${SV}${x.ico}</svg></span><span class="s-txt"><b>${x.label}</b><small>${x.sub}</small></span></button>`).join('');
+}
+const srcOtherTxt = () => S.srcOther.trim().replace(/\s+/g, ' ');
+function sourceValid() { return !!S.src && (S.src !== 'outro' || srcOtherTxt().length >= 2); }
+// rótulo salvo no envio / mostrado no resumo
+function srcLabel() { return !S.src ? '' : S.src === 'outro' ? (srcOtherTxt() || 'Outro') : S.src === 'meta' ? 'Meta (Facebook/Instagram)' : S.src === 'direto' ? 'Direto (sem mensagem)' : 'Google'; }
+function srcShort() { return !S.src ? '' : S.src === 'meta' ? 'Facebook/Instagram' : S.src === 'direto' ? 'Direto' : S.src === 'outro' ? (srcOtherTxt() || 'Outro') : 'Google'; }
+function selectSource(key, silent) {
+  if (key && !SOURCES.some(x => x.key === key)) return;
+  S.src = key || null;
+  $$('#srcList .src-opt').forEach(o => o.setAttribute('aria-checked', o.dataset.key === key));
+  const other = key === 'outro';
+  $('#srcReveal').classList.toggle('open', other);
+  $('#srcOther').tabIndex = other ? 0 : -1;
+  if (other && !silent) setTimeout(() => $('#srcOther').focus({ preventScroll: true }), 260);
+  applySource(); renderPeriodLabel(); updateBar();
+  if (!silent) vibrate(8);
+}
+// Textos que mudam conforme a origem (dica do período e 1ª pergunta do funil)
+function applySource() {
+  const q = `“${esc(srcOtherTxt() || 'essa origem')}”`;
+  const T = {
+    google: ['chegaram pelo Google', 'Quantos leads chegaram com a mensagem inicial do Google?', 'Conte os contatos que chegaram no WhatsApp com a mensagem automática do anúncio, como <q>Olá, vi seu anúncio no Google…</q>. Ex.: 48'],
+    meta: ['chegaram pelos anúncios do Facebook ou Instagram', 'Quantos leads chegaram pelo Facebook ou Instagram?', 'Conte os contatos que chegaram no WhatsApp ou no Direct vindos dos anúncios do Meta (Facebook ou Instagram). Ex.: 48'],
+    direto: ['chegaram direto, sem a mensagem do anúncio', 'Quantos leads chegaram direto, sem a mensagem do anúncio?', 'Conte os contatos que chamaram no WhatsApp, ligaram ou foram até o local sem a mensagem automática do anúncio. Ex.: 48'],
+    outro: [`vieram de ${q}`, `Quantos leads vieram de ${q}?`, 'Conte os contatos que chegaram por essa origem no período. Ex.: 48']
+  };
+  const t = T[S.src] || ['da origem escolhida acima', T.google[1], T.google[2]];
+  $('#pHint').innerHTML = `Considere só os contatos que ${t[0]} nesse intervalo. Ex.: se você responde toda segunda, escolha <q>Última semana</q>.`.replace('contatos que da origem', 'contatos da origem');
+  $('#q1t').innerHTML = t[1]; $('#q1h').innerHTML = t[2];
+  // a pergunta extra do Facebook/Instagram só faz sentido quando o funil principal é o do Google
+  $('.q-meta').hidden = !askMeta();
+}
+$('#srcList').addEventListener('click', e => { const o = e.target.closest('.src-opt'); if (o) selectSource(o.dataset.key); });
+$('#srcOther').addEventListener('input', () => { S.srcOther = $('#srcOther').value.slice(0, 60); applySource(); renderPeriodLabel(); updateBar(); });
+$('#srcOther').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#srcOther').blur(); } });
 
 /* =========================================================
    Período
@@ -914,10 +987,10 @@ $('#nicheList').addEventListener('click', e => { const o = e.target.closest('.op
 function periodValid() { return !!(S.period.key && S.period.start && S.period.end && S.period.start <= S.period.end); }
 function periodText() { return periodValid() ? rangeText(parseISO(S.period.start), parseISO(S.period.end)) : ''; }
 function renderPeriodLabel() {
-  if (!S.period.key) return;
+  if (!S.period.key) { $('#vizPeriod').textContent = srcShort(); return; }
   $('#ddLabel').textContent = S.period.label;
   $('#ddRange').textContent = periodText() || 'Escolha as datas';
-  $('#vizPeriod').textContent = [S.niche && S.niche.id !== 'todos' ? S.niche.label : '', periodText()].filter(Boolean).join(' · ');
+  $('#vizPeriod').textContent = [srcShort(), S.niche && S.niche.id !== 'todos' ? S.niche.label : '', periodText()].filter(Boolean).join(' · ');
 }
 
 /* =========================================================
@@ -1263,7 +1336,7 @@ function insight() { return;
 
 /* ---------- perguntas do funil ---------- */
 const Q_KEYS = ['leads', 'consultas', 'tratamentos', 'metaLeads'];
-const askMeta = () => !!S.link?.brand?.askMeta;
+const askMeta = () => !!S.link?.brand?.askMeta && S.src === 'google';
 const NQ = () => askMeta() ? 4 : 3;
 function qEl(i) { return $(`.q[data-q="${i}"]`); }
 function activateQ(i) {
@@ -1513,6 +1586,7 @@ function payload() {
     version: 1,
     period: { key: S.period.key, label: S.period.label, start: S.period.start, end: S.period.end },
     niche: S.niche,
+    lead_source: S.src ? { key: S.src, label: srcLabel() } : null,
     vocab: S.vocab || 'medico',
     leads: S.leads, consultas: S.consultas, tratamentos: S.tratamentos || 0, tratamentos_desc: S.tratDesc,
     meta_leads: askMeta() ? S.metaLeads : null,
@@ -1585,7 +1659,7 @@ function renderSummary() {
   $('#okSub').textContent = `${S.period.label} · ${periodText()}`;
   renderAnother();
   const l = S.leads || 0, c = S.consultas || 0, t = S.tratamentos || 0;
-  $('#sumPeriod').textContent = [S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
+  $('#sumPeriod').textContent = [srcShort(), S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
   $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
   $('#sumMeta').hidden = !(askMeta() && S.metaLeads != null);
   if (askMeta() && S.metaLeads != null) $('#sumMeta').innerHTML = `<span class="meta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8" fill="currentColor"/></svg></span><span class="meta-t">Leads do Facebook/Instagram<small>contados à parte do funil do Google</small></span><b>${S.metaLeads.toLocaleString('pt-BR')}</b>`;
@@ -1634,7 +1708,11 @@ async function makePDF() {
     y += 66;
     txt(S.link.client_name || '', M, y, { bold: true, size: 22 });
     y += 20;
-    txt(`Período: ${periodText()} (${S.period.label.toLowerCase()})${S.niche && niches().length > 1 ? '   |   Site/nicho: ' + (S.niche.id === 'todos' ? 'todos os sites' : S.niche.label) : ''}`, M, y, { size: 10.5, color: INK2 });
+    const hl = `Período: ${periodText()} (${S.period.label.toLowerCase()})${S.niche && niches().length > 1 ? '   |   Site/nicho: ' + (S.niche.id === 'todos' ? 'todos os sites' : S.niche.label) : ''}`;
+    const ol = S.src ? `Origem dos leads: ${srcLabel()}` : '';
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    if (ol && doc.getTextWidth(hl + '   |   ' + ol) <= R - M) txt(hl + '   |   ' + ol, M, y, { size: 10.5, color: INK2 });
+    else { txt(hl, M, y, { size: 10.5, color: INK2 }); if (ol) { y += 15; txt(ol, M, y, { size: 10.5, color: INK2 }); } }
     y += 16; doc.setFillColor(...rgb(accent)); doc.rect(M, y, R - M, 2, 'F');
 
     // funil
@@ -1715,6 +1793,7 @@ function resetForAnother(nid) {
   $$('.q-error').forEach(e => { e.textContent = ''; });
   for (let i = 0; i < 3; i++) FN.set(i, null);
   syncReasons(); activateQ(0);
+  S.srcOther = ''; $('#srcOther').value = ''; selectSource(null, true);
   if (nid) selectNiche(nid, true);
   else { S.niche = null; $$('#nicheList .opt').forEach(o => o.setAttribute('aria-checked', 'false')); nicheColors(); applyVocab(); }
   go('period', -1);
@@ -1742,7 +1821,7 @@ function fail(kind) {
 }
 
 async function init() {
-  buildPeriodList();
+  buildPeriodList(); buildSources();
   try {
     if (DEMO) {
       const qp = k => (params.get(k) || '').slice(0, 80);
@@ -1763,7 +1842,7 @@ async function init() {
   if (S.link.brand?.test) IS_TEST = true;
   if (IS_TEST) $('#stepcount').insertAdjacentHTML('beforebegin', '<span class="test-tag">TESTE</span>');
   applyBrand(S.link.brand || {});
-  $('.q-meta').hidden = !askMeta();
+  applySource();
   document.title = `Relatório de acompanhamento · ${S.link.client_name}`;
   applyVocab();
   $('#loader').remove();
