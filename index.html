@@ -456,7 +456,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         </div>
         <div class="niche" id="nicheBox" hidden>
           <h3>Esses leads são de qual site/nicho?</h3>
-          <p class="hint">Escolha o site de onde vieram os contatos que você vai informar. Se for responder somando todos, marque a última opção.</p>
+          <p class="hint">Escolha o site de onde vieram os contatos que você vai informar.</p>
           <div class="opts" id="nicheList" role="radiogroup" aria-label="Site ou nicho"></div>
         </div>
         <p class="q-error" id="pErr"></p>
@@ -551,19 +551,19 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
         <div class="src-steps" id="qlSteps" hidden></div>
 
         <div class="card">
-          <h3>Como você avalia a qualidade dos leads recebidos?</h3>
+          <h3 id="qlQ">Como você avalia a qualidade dos leads recebidos?</h3>
           <p class="hint" data-v="qh">Pense em quem chega com interesse real e perfil para a consulta. Ex.: <q>boa</q> se a maioria pergunta sobre agenda e valores e acaba marcando.</p>
           <div class="thermo" data-key="quality" role="radiogroup" aria-label="Qualidade dos leads"></div>
         </div>
 
         <div class="card">
-          <h3>Como você avalia a renda média do público?</h3>
+          <h3 id="qlI">Como você avalia a renda média do público?</h3>
           <p class="hint" data-v="ih">Sua percepção pelas conversas: o valor da consulta particular é um obstáculo? Ex.: <q>média</q> se metade acha o valor alto.</p>
           <div class="thermo" data-key="income" role="radiogroup" aria-label="Renda média do público"></div>
         </div>
 
         <div class="card">
-          <h3>Quais os motivos mais comuns de desqualificação?</h3>
+          <h3 id="qlR">Quais os motivos mais comuns de desqualificação?</h3>
           <p class="hint">Marque todos que aparecem com frequência nas conversas.</p>
           <div class="chips" id="chips"></div>
           <div class="reveal" id="otherReveal"><div>
@@ -927,6 +927,18 @@ const SRC_TX = () => {
     outro: [`vieram de ${q}`, `Quantos leads vieram de ${q}?`, 'Conte os contatos que chegaram por essa origem no período. Ex.: 48', `Agora, o funil de ${q}`]
   };
 };
+// "do Google", "do Facebook/Instagram", "que chegaram direto", "de “Indicação”" — entra no texto de cada pergunta
+const tagOf = k => !k ? '' : k === 'meta' ? 'do Facebook/Instagram' : k === 'direto' ? 'que chegaram direto' : k === 'outro' ? `de “${esc(srcOtherTxt() || 'outra origem')}”` : 'do Google';
+function applySrcTexts() {
+  if (typeof W === 'undefined' || !W) return;
+  const f = tagOf(S.src || S.srcs[0]), q = tagOf(S.qsrc || S.srcs[0]);
+  const q2 = $('[data-v="q2"]'), q3 = $('[data-v="q3"]');
+  if (q2) q2.innerHTML = f ? W.q2.replace('desses leads', 'desses leads ' + f) : W.q2;
+  if (q3) q3.innerHTML = f ? W.q3.replace(/^(Algum desses \S+)/, '$1 ' + f) : W.q3;
+  $('#qlQ').innerHTML = `Como você avalia a qualidade dos leads ${q || 'recebidos'}?`;
+  $('#qlI').innerHTML = q ? `Como você avalia a renda média dos leads ${q}?` : 'Como você avalia a renda média do público?';
+  $('#qlR').innerHTML = q ? `Quais os motivos mais comuns de desqualificação dos leads ${q}?` : 'Quais os motivos mais comuns de desqualificação?';
+}
 const ofSrc = k => k === 'meta' ? 'do Facebook/Instagram' : k === 'direto' ? 'dos contatos diretos' : k === 'outro' ? `de “${esc(srcOtherTxt() || 'outra origem')}”` : 'do Google';
 // Textos que mudam conforme a origem (dica do período, título e 1ª pergunta do funil)
 function applySource() {
@@ -938,6 +950,7 @@ function applySource() {
   $('#f-title').innerHTML = S.srcs.length > 1 && S.src ? 'Agora, o funil ' + ofSrc(S.src) : 'Agora, o funil do período';
   renderSrcSteps();
   renderQlHead();
+  applySrcTexts();
   // a pergunta extra do Facebook/Instagram só aparece no funil do Google (e se o Meta não tiver o próprio funil)
   $('.q-meta').hidden = !askMeta();
 }
@@ -953,6 +966,7 @@ function renderQlHead() {
   $('#ql-title').innerHTML = multi ? `Como está o perfil dos leads ${ofSrc(S.qsrc)}?` : 'Como está o perfil dos leads?';
   const box = $('#qlSteps'); box.hidden = !multi;
   if (multi) box.innerHTML = stepsHTML(S.qi, profDone);
+  applySrcTexts();
 }
 const profValid = p => !!(p && p.quality != null && p.income != null && p.reasons.length > 0 && (!p.reasons.includes('outro') || (p.reasonOther || '').trim().length >= 3));
 function curProf() { return { quality: S.quality, income: S.income, qualityScore: S.qualityScore, incomeScore: S.incomeScore, reasons: [...S.reasons], reasonOther: S.reasonOther }; }
@@ -1064,8 +1078,7 @@ function buildNiches() {
   const list = niches();
   $('#nicheBox').hidden = list.length < 2;
   if (list.length < 2) { S.niche = list[0] ? { id: list[0].id, label: list[0].label, url: list[0].url || '' } : null; nicheColors(); return; }
-  const all = [...list, { id: 'todos', label: 'Todos os sites (somados)', url: '' }];
-  $('#nicheList').innerHTML = all.map(n => `<button type="button" class="opt" role="radio" aria-checked="false" data-id="${esc(n.id)}">
+  $('#nicheList').innerHTML = list.map(n => `<button type="button" class="opt" role="radio" aria-checked="false" data-id="${esc(n.id)}">
     <div class="o-txt"><b>${esc(n.label)}</b><span>${n.url ? esc(prettyUrl(n.url)) : 'Respostas somando os contatos de todos os sites'}</span></div><span class="radio"></span></button>`).join('');
 }
 function selectNiche(id, silent) {
@@ -1389,6 +1402,7 @@ function applyVocab() {
     else if (W[k] != null) el.innerHTML = W[k];
   });
   $('#tratDesc').placeholder = W.q3p;
+  applySrcTexts();
   $('.q[data-q="1"] .lbl').textContent = W.d2;
   $('.q[data-q="2"] .lbl').textContent = W.d3;
   $('.num[data-key="consultas"] .num-input').setAttribute('aria-label', 'Quantidade de ' + W.s2);
