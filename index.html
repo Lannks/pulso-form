@@ -6,6 +6,16 @@
 <meta name="theme-color" content="#F5F5F7">
 <meta name="robots" content="noindex, nofollow">
 <title>Relatório de acompanhamento</title>
+<meta name="description" content="Leva 2 minutos: conte o que aconteceu com os leads dos anúncios e baixe o relatório em PDF no final.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Relatório de acompanhamento">
+<meta property="og:description" content="Leva 2 minutos: conte o que aconteceu com os leads dos anúncios e baixe o relatório em PDF no final.">
+<meta property="og:image" content="https://lannks.github.io/pulso-form/og.jpg?v=1">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -878,7 +888,8 @@ $('#btnNext').addEventListener('click', () => {
 });
 $('#btnBack').addEventListener('click', () => {
   const i = SCREENS.indexOf(S.screen);
-  if (S.screen === 'funnel' && S.fq > 0 && S.fq < NQ()) { activateQ(S.fq - 1); return; }
+  const pq = [0, 1, 2, 3].filter(k => k < S.fq && qOn(k)).pop();
+  if (S.screen === 'funnel' && S.fq < NQ() && pq != null) { activateQ(pq); return; }
   if (S.screen === 'funnel') { saveCur(); if (S.si > 0) { loadSrc(S.si - 1, -1); return; } }
   if (S.screen === 'quality') { saveProf(); if (S.qi > 0) { loadProf(S.qi - 1, -1); return; } }
   if (i > 0) go(SCREENS[i - 1], -1);
@@ -991,7 +1002,7 @@ function loadProf(i, dir) {
   if (dir) go('quality', dir);
   syncReasons(); renderQlHead();
 }
-function funnelDone(k) { const f = k === S.src ? curFunnel() : S.funnels[k]; return !!(f && f.done[0] && f.done[1] && f.done[2] && (!(metaAsked() && k === 'google') || f.done[3])); }
+function funnelDone(k) { const f = k === S.src ? curFunnel() : S.funnels[k], st = stagesNow(); return !!(f && f.done[0] && (f.done[1] || !st.consultas) && (f.done[2] || !st.tratamentos) && (!(metaAsked() && k === 'google') || f.done[3])); }
 // Um funil por origem: guarda e restaura as respostas da origem atual
 function curFunnel() { return { leads: S.leads, consultas: S.consultas, tratYes: S.tratYes, tratamentos: S.tratamentos, tratDesc: S.tratDesc, metaLeads: S.metaLeads, done: [S._done0, S._done1, S._done2, S._done3], finalePlayed: S.finalePlayed }; }
 function saveCur() { if (S.src) S.funnels[S.src] = curFunnel(); }
@@ -1267,15 +1278,16 @@ const FN = (() => {
     });
   }
   function staticSVG(vs) {
-    let out = `<svg viewBox="0 0 340 258" width="100%" role="img" aria-label="Funil: ${vs[0]} ${LABELS[0]}, ${vs[1]} ${LABELS[1]}, ${vs[2]} ${LABELS[2]}" style="display:block">`;
+    const n = Math.max(1, Math.min(3, vs.length));
+    let out = `<svg viewBox="0 0 340 ${258 - (3 - n) * (SH + GAP)}" width="100%" role="img" aria-label="Funil: ${vs.map((v, i) => v + ' ' + LABELS[i]).join(', ')}" style="display:block">`;
     out += `<defs><filter id="fnShadowS" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-opacity=".16"/></filter></defs>`;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < n; i++) {
       const y = TOP + i * (SH + GAP); const ink = inkOn(STAGE[i]);
       out += `<path d="${slicePath(i)}" fill="${STAGE[i]}"/>`;
       out += `<text x="${CX}" y="${y + 39}" text-anchor="middle" font-size="25" font-weight="650" fill="${ink}">${vs[i].toLocaleString('pt-BR')}</text>`;
       out += `<text x="${CX}" y="${y + 57}" text-anchor="middle" font-size="12" font-weight="500" fill="${ink}" fill-opacity=".86">${LABELS[i]}</text>`;
     }
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < n - 1; i++) {
       const y = TOP + (i + 1) * (SH + GAP) - GAP / 2;
       out += `<g transform="translate(${CX} ${y})" filter="url(#fnShadowS)"><rect x="-27" y="-11" width="54" height="22" rx="11" fill="#fff"/><path d="M-15 -3 l3.5 4 3.5 -4" fill="none" stroke="#6E6E73" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="6" y="4.2" text-anchor="middle" font-size="11.5" font-weight="650" fill="#1D1D1F">${pct(vs[i + 1], vs[i])}%</text></g>`;
     }
@@ -1454,13 +1466,25 @@ function insight() { return;
 
 /* ---------- perguntas do funil ---------- */
 const Q_KEYS = ['leads', 'consultas', 'tratamentos', 'metaLeads'];
+// Etapas do funil que o formulário pergunta (configuradas no Pulso por site). Desligadas ficam só no painel.
+function stagesNow() {
+  const n = S.niche && niches().find(x => x.id === S.niche.id);
+  const st = (n && n.stages) || S.link?.brand?.stages || {};
+  const cons = st.consultas !== false;
+  return { consultas: cons, tratamentos: cons && st.tratamentos !== false };
+}
+const nStages = () => 1 + (stagesNow().consultas ? 1 : 0) + (stagesNow().tratamentos ? 1 : 0);
+const qOn = k => k === 0 || (k === 1 ? stagesNow().consultas : k === 2 ? stagesNow().tratamentos : askMeta());
 const metaAsked = () => !!S.link?.brand?.askMeta && S.srcs.includes('google') && !S.srcs.includes('meta');
 const askMeta = () => metaAsked() && S.src === 'google';
-const NQ = () => askMeta() ? 4 : 3;
+const NQ = () => 4; // índice "todas respondidas"; perguntas desligadas contam como respondidas
 function qEl(i) { return $(`.q[data-q="${i}"]`); }
 function activateQ(i) {
   S.fq = i;
+  let num = 0;
   $$('.q').forEach((q, k) => {
+    q.hidden = !qOn(k);
+    if (!q.hidden) $('.q-index', q).textContent = ++num;
     const isDone = k !== i && isAnswered(k);
     q.classList.toggle('is-active', k === i);
     q.classList.toggle('is-done', k !== i && isDone);
@@ -1474,6 +1498,7 @@ function activateQ(i) {
   updateBar();
 }
 function isAnswered(k) {
+  if (!qOn(k)) return true;
   if (k === 0) return S.leads != null && S._done0;
   if (k === 1) return S.consultas != null && S._done1;
   if (k === 3) return askMeta() && S.metaLeads != null && S._done3;
@@ -1709,9 +1734,10 @@ function payload() {
     niche: S.niche,
     lead_source: S.srcs.length ? { key: S.srcs[0], label: labelOf(S.srcs[0]) } : null,
     // um funil por origem marcada (o Pulso separa em uma resposta por origem)
-    funnels: S.srcs.map(k => { const f = S.funnels[k] || {}; return { source: { key: k, label: labelOf(k) }, leads: f.leads ?? 0, consultas: f.consultas ?? 0, tratamentos: f.tratYes ? (f.tratamentos || 0) : 0, tratamentos_desc: f.tratYes ? (f.tratDesc || '') : '', meta_leads: k === 'google' && metaAsked() ? (f.metaLeads ?? null) : null, ...profPayload(S.profs[k]) }; }),
+    funnels: S.srcs.map(k => { const f = S.funnels[k] || {}, st = stagesNow(); return { source: { key: k, label: labelOf(k) }, leads: f.leads ?? 0, consultas: st.consultas ? (f.consultas ?? 0) : null, tratamentos: st.tratamentos ? (f.tratYes ? (f.tratamentos || 0) : 0) : null, tratamentos_desc: st.tratamentos && f.tratYes ? (f.tratDesc || '') : '', meta_leads: k === 'google' && metaAsked() ? (f.metaLeads ?? null) : null, ...profPayload(S.profs[k]) }; }),
     vocab: S.vocab || 'medico',
-    ...(T => ({ leads: T.leads, consultas: T.consultas, tratamentos: T.tratamentos }))(totals()),
+    ...(T => ({ leads: T.leads, consultas: stagesNow().consultas ? T.consultas : null, tratamentos: stagesNow().tratamentos ? T.tratamentos : null }))(totals()),
+    stages: stagesNow(),
     tratamentos_desc: S.srcs.map(k => S.funnels[k]?.tratYes ? S.funnels[k].tratDesc : '').filter(Boolean).join(' | ').slice(0, 300),
     meta_leads: gMeta(),
     ...profPayload(S.profs[S.srcs[0]] || curProf()),
@@ -1784,16 +1810,16 @@ function renderSummary() {
   const TT = totals(), l = TT.leads, c = TT.consultas, t = TT.tratamentos;
   const multi = S.srcs.length > 1;
   $('#sumSrc').hidden = !multi;
-  if (multi) $('#sumSrc').innerHTML = S.srcs.map(k => { const f = S.funnels[k] || {}; return `<div class="ss-row"><b>${esc(shortOf(k))}</b><span>${(f.leads || 0).toLocaleString('pt-BR')} leads · ${(f.consultas || 0).toLocaleString('pt-BR')} ${esc(W.f[1])} · ${(f.tratYes ? f.tratamentos || 0 : 0).toLocaleString('pt-BR')} ${esc(W.f[2])}</span></div>`; }).join('');
+  const ns = nStages();
+  if (multi) $('#sumSrc').innerHTML = S.srcs.map(k => { const f = S.funnels[k] || {}; return `<div class="ss-row"><b>${esc(shortOf(k))}</b><span>${[`${(f.leads || 0).toLocaleString('pt-BR')} leads`, `${(f.consultas || 0).toLocaleString('pt-BR')} ${esc(W.f[1])}`, `${(f.tratYes ? f.tratamentos || 0 : 0).toLocaleString('pt-BR')} ${esc(W.f[2])}`].slice(0, ns).join(' · ')}</span></div>`; }).join('');
   $('#sumPeriod').textContent = [srcShort(), S.niche && niches().length > 1 ? (S.niche.id === 'todos' ? 'Todos os sites' : S.niche.label) : '', S.period.label, periodText()].filter(Boolean).join(' · ');
-  $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t]);
+  $('#sumFunnel').innerHTML = FN.staticSVG([l, c, t].slice(0, ns));
   $('#sumMeta').hidden = gMeta() == null;
   if (gMeta() != null) $('#sumMeta').innerHTML = `<span class="meta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8" fill="currentColor"/></svg></span><span class="meta-t">Leads do Facebook/Instagram<small>contados à parte do funil do Google</small></span><b>${gMeta().toLocaleString('pt-BR')}</b>`;
-  $('#sumTiles').innerHTML = [
-    [pct(c, l) + '%', W.t[0]],
-    [pct(t, c) + '%', W.t[1]],
-    [pct(t, l) + '%', W.t[2]]
-  ].map(([b, s]) => `<div class="tile"><b>${b}</b><span>${s}</span></div>`).join('');
+  const tl = [[pct(c, l) + '%', W.t[0]], [pct(t, c) + '%', W.t[1]], [pct(t, l) + '%', W.t[2]]].slice(0, ns === 3 ? 3 : ns === 2 ? 1 : 0);
+  $('#sumTiles').hidden = !tl.length;
+  $('#sumTiles').style.gridTemplateColumns = `repeat(${Math.max(1, tl.length)},1fr)`;
+  $('#sumTiles').innerHTML = tl.map(([b, s]) => `<div class="tile"><b>${b}</b><span>${s}</span></div>`).join('');
   const row = (label, key) => {
     const cfg = THERMO[key]; const i = cfg.values.indexOf(S[key]);
     return `<span class="mr-l">${label}</span><span class="meter3">${[0, 1, 2].map(k => `<i style="${k === i ? `background:${TH_COLORS[k]}` : ''}"></i>`).join('')}</span><span class="mr-v">${cfg.labels[i] || '—'}</span>`;
@@ -1845,10 +1871,10 @@ async function makePDF() {
     y += 34; txt(S.srcs.length > 1 ? 'Funil do período (todas as origens)' : 'Funil do período', M, y, { bold: true, size: 12 });
     y += 18;
     const TT = totals();
-    const vs = [TT.leads, TT.consultas, TT.tratamentos];
+    const vs = [TT.leads, TT.consultas, TT.tratamentos].slice(0, nStages());
     const names = W.f;
     // cone invertido reto, à esquerda; taxas à direita de cada fatia
-    const cTop = 330, cBot = 112, sh = 46, sg = 3, total = 3 * sh + 2 * sg, cx = M + cTop / 2, y0 = y;
+    const cTop = 330, cBot = 112, sh = 46, sg = 3, total = 3 * sh + 2 * sg, cx = M + cTop / 2, y0 = y, totalN = vs.length * sh + (vs.length - 1) * sg;
     const wAt = yy => cTop - (cTop - cBot) * ((yy - y0) / total);
     vs.forEach((v, i) => {
       const a = y0 + i * (sh + sg), b = a + sh, w0 = wAt(a), w1 = wAt(b);
@@ -1864,21 +1890,22 @@ async function makePDF() {
         txt(i === 1 ? W.r1 : W.r2, edge + 2, a + sh / 2 + 13, { size: 8.5, color: INK2 });
       }
     });
-    y = y0 + total;
+    y = y0 + totalN;
     if (S.srcs.length > 1) {
       y += 30; txt('Por origem', M, y, { bold: true, size: 12 });
       y += 10;
       const cols = [M + 14, R - 236, R - 130, R - 14];
       doc.setFillColor(...FILL); doc.roundedRect(M, y, R - M, 24 + S.srcs.length * 24, 10, 10, 'F');
       txt('Origem', cols[0], y + 16, { size: 8.5, color: INK2 }); txt('Leads', cols[1], y + 16, { size: 8.5, color: INK2, align: 'right' });
-      txt(names[1][0].toUpperCase() + names[1].slice(1), cols[2], y + 16, { size: 8.5, color: INK2, align: 'right' }); txt(names[2][0].toUpperCase() + names[2].slice(1), cols[3], y + 16, { size: 8.5, color: INK2, align: 'right' });
+      if (vs.length > 1) txt(names[1][0].toUpperCase() + names[1].slice(1), cols[2], y + 16, { size: 8.5, color: INK2, align: 'right' });
+      if (vs.length > 2) txt(names[2][0].toUpperCase() + names[2].slice(1), cols[3], y + 16, { size: 8.5, color: INK2, align: 'right' });
       S.srcs.forEach((k, i) => {
         const f = S.funnels[k] || {}, yy = y + 24 + i * 24 + 16;
         doc.setDrawColor(...LINE); doc.setLineWidth(0.6); doc.line(M + 14, yy - 16, R - 14, yy - 16);
         txt(labelOf(k).slice(0, 48), cols[0], yy, { size: 10 });
         txt((f.leads || 0).toLocaleString('pt-BR'), cols[1], yy, { bold: true, size: 10, align: 'right' });
-        txt((f.consultas || 0).toLocaleString('pt-BR'), cols[2], yy, { bold: true, size: 10, align: 'right' });
-        txt((f.tratYes ? f.tratamentos || 0 : 0).toLocaleString('pt-BR'), cols[3], yy, { bold: true, size: 10, align: 'right' });
+        if (vs.length > 1) txt((f.consultas || 0).toLocaleString('pt-BR'), cols[2], yy, { bold: true, size: 10, align: 'right' });
+        if (vs.length > 2) txt((f.tratYes ? f.tratamentos || 0 : 0).toLocaleString('pt-BR'), cols[3], yy, { bold: true, size: 10, align: 'right' });
       });
       y += 24 + S.srcs.length * 24;
     }
@@ -1892,7 +1919,7 @@ async function makePDF() {
 
     // indicadores
     y += 22;
-    const tiles = [[pct(vs[1], vs[0]) + '%', W.p[0]], [pct(vs[2], vs[1]) + '%', W.p[1]], [pct(vs[2], vs[0]) + '%', W.p[2]]];
+    const tiles = [[pct(vs[1], vs[0]) + '%', W.p[0]], [pct(vs[2], vs[1]) + '%', W.p[1]], [pct(vs[2], vs[0]) + '%', W.p[2]]].slice(0, vs.length === 3 ? 3 : vs.length === 2 ? 1 : 0);
     const tw = (R - M - 24) / 3;
     tiles.forEach(([b, s], i) => {
       const x = M + i * (tw + 12);
