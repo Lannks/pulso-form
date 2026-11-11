@@ -169,6 +169,9 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
 .src-step span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .src-step svg{width:13px;height:13px;flex:none}
 .src-step.ok{background:var(--accent-soft);color:var(--accent)}
+button.src-step{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.src-step:not(.on):not(:disabled):active{transform:scale(.96)}
+button.src-step:disabled{opacity:.55;cursor:default}
 .src-step.on{background:var(--accent);color:var(--accent-ink)}
 .src-sum{padding:4px 16px}
 .src-sum[hidden]{display:none}
@@ -955,7 +958,14 @@ function applySource() {
   $('.q-meta').hidden = !askMeta();
 }
 const ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>';
-function stepsHTML(cur, doneFn) { return S.srcs.map((k, i) => { const done = i !== cur && doneFn(k); return `<span class="src-step${i === cur ? ' on' : done ? ' ok' : ''}">${done ? ICO_OK : ''}<span>${i + 1}. ${esc(shortOf(k))}</span></span>`; }).join(''); }
+// Abas das origens: tocar volta para o formulário daquela origem com as respostas (só até a primeira ainda não respondida)
+function stepsHTML(cur, doneFn) {
+  const undone = S.srcs.findIndex(k => !doneFn(k));
+  const reach = i => i === cur || undone < 0 || i <= undone;
+  return S.srcs.map((k, i) => { const done = i !== cur && doneFn(k); return `<button type="button" class="src-step${i === cur ? ' on' : done ? ' ok' : ''}" data-i="${i}"${reach(i) ? '' : ' disabled'}${i === cur ? ' aria-current="step"' : ''}>${done ? ICO_OK : ''}<span>${i + 1}. ${esc(shortOf(k))}</span></button>`; }).join('');
+}
+$('#srcSteps').addEventListener('click', e => { const b = e.target.closest('.src-step'); if (!b || b.disabled) return; const i = +b.dataset.i; if (i === S.si) return; saveCur(); loadSrc(i, i > S.si ? 1 : -1); vibrate(8); });
+$('#qlSteps').addEventListener('click', e => { const b = e.target.closest('.src-step'); if (!b || b.disabled) return; const i = +b.dataset.i; if (i === S.qi) return; saveProf(); loadProf(i, i > S.qi ? 1 : -1); vibrate(8); });
 function renderSrcSteps() {
   const box = $('#srcSteps'); box.hidden = S.srcs.length < 2;
   if (!box.hidden) box.innerHTML = stepsHTML(S.si, funnelDone);
