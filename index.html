@@ -548,6 +548,7 @@ textarea.input{resize:none;min-height:128px;line-height:1.5}
       <section class="screen" data-screen="quality" aria-labelledby="ql-title">
         <p class="kicker">Etapa 3 de 4</p>
         <h2 id="ql-title">Como está o perfil dos leads?</h2>
+        <div class="src-steps" id="qlSteps" hidden></div>
 
         <div class="card">
           <h3>Como você avalia a qualidade dos leads recebidos?</h3>
@@ -675,7 +676,7 @@ const S = {
   link: null,
   period: { key: null, start: null, end: null, label: '' },
   niche: null,
-  src: null, srcs: [], srcOther: '', si: 0, funnels: {},
+  src: null, srcs: [], srcOther: '', si: 0, funnels: {}, qi: 0, qsrc: null, profs: {},
   leads: null, consultas: null, tratYes: null, tratamentos: null, tratDesc: '',
   quality: null, income: null,
   reasons: [], reasonOther: '', comment: '',
@@ -854,7 +855,7 @@ function updateBar() {
   if (sc === 'welcome') label = 'Começar';
   else if (sc === 'period') ok = sourceValid() && periodValid() && nicheValid();
   else if (sc === 'funnel') { ok = funnelStepReady(); if (S.fq >= NQ() && S.si < S.srcs.length - 1) label = `Continuar para ${shortOf(S.srcs[S.si + 1])}`; }
-  else if (sc === 'quality') ok = S.quality != null && S.income != null && S.reasons.length > 0 && (!S.reasons.includes('outro') || S.reasonOther.trim().length >= 3);
+  else if (sc === 'quality') { ok = profValid(curProf()); if (S.qi < S.srcs.length - 1) label = `Continuar para ${shortOf(S.srcs[S.qi + 1])}`; }
   else if (sc === 'comment') label = 'Enviar respostas';
   else if (sc === 'summary') label = 'Baixar relatório em PDF';
   next.innerHTML = sc === 'summary'
@@ -868,7 +869,7 @@ $('#btnNext').addEventListener('click', () => {
   if (sc === 'welcome') return go('period');
   if (sc === 'period') { if (!sourceValid() || !periodValid() || !nicheValid()) return; go('funnel'); loadSrc(0); return; }
   if (sc === 'funnel') return funnelNext();
-  if (sc === 'quality') return go('comment');
+  if (sc === 'quality') { saveProf(); if (S.qi < S.srcs.length - 1) return loadProf(S.qi + 1, 1); return go('comment'); }
   if (sc === 'comment') return submit();
   if (sc === 'summary') return makePDF();
 });
@@ -876,6 +877,7 @@ $('#btnBack').addEventListener('click', () => {
   const i = SCREENS.indexOf(S.screen);
   if (S.screen === 'funnel' && S.fq > 0 && S.fq < NQ()) { activateQ(S.fq - 1); return; }
   if (S.screen === 'funnel') { saveCur(); if (S.si > 0) { loadSrc(S.si - 1, -1); return; } }
+  if (S.screen === 'quality') { saveProf(); if (S.qi > 0) { loadProf(S.qi - 1, -1); return; } }
   if (i > 0) go(SCREENS[i - 1], -1);
 });
 
@@ -908,7 +910,7 @@ function toggleSource(key, silent) {
   if (key === 'outro' && S.srcs.includes('outro') && !silent) setTimeout(() => $('#srcOther').focus({ preventScroll: true }), 260);
   if (!silent) vibrate(8);
 }
-function clearSources() { S.srcs = []; S.src = null; S.si = 0; S.funnels = {}; S.srcOther = ''; $('#srcOther').value = ''; syncSourceUI(); }
+function clearSources() { S.srcs = []; S.src = null; S.si = 0; S.funnels = {}; S.qi = 0; S.qsrc = null; S.profs = {}; S.srcOther = ''; $('#srcOther').value = ''; syncSourceUI(); }
 function syncSourceUI() {
   $$('#srcList .src-opt').forEach(o => o.setAttribute('aria-checked', S.srcs.includes(o.dataset.key)));
   const other = S.srcs.includes('outro');
@@ -925,6 +927,7 @@ const SRC_TX = () => {
     outro: [`vieram de ${q}`, `Quantos leads vieram de ${q}?`, 'Conte os contatos que chegaram por essa origem no período. Ex.: 48', `Agora, o funil de ${q}`]
   };
 };
+const ofSrc = k => k === 'meta' ? 'do Facebook/Instagram' : k === 'direto' ? 'dos contatos diretos' : k === 'outro' ? `de “${esc(srcOtherTxt() || 'outra origem')}”` : 'do Google';
 // Textos que mudam conforme a origem (dica do período, título e 1ª pergunta do funil)
 function applySource() {
   const T = SRC_TX();
@@ -932,16 +935,37 @@ function applySource() {
   $('#pHint').innerHTML = `Considere só os contatos ${via} nesse intervalo. Ex.: se você responde toda segunda, escolha <q>Última semana</q>.`;
   const t = T[S.src] || T.google;
   $('#q1t').innerHTML = t[1]; $('#q1h').innerHTML = t[2];
-  $('#f-title').innerHTML = S.srcs.length > 1 && S.src ? t[3] : 'Agora, o funil do período';
+  $('#f-title').innerHTML = S.srcs.length > 1 && S.src ? 'Agora, o funil ' + ofSrc(S.src) : 'Agora, o funil do período';
   renderSrcSteps();
+  renderQlHead();
   // a pergunta extra do Facebook/Instagram só aparece no funil do Google (e se o Meta não tiver o próprio funil)
   $('.q-meta').hidden = !askMeta();
 }
 const ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>';
+function stepsHTML(cur, doneFn) { return S.srcs.map((k, i) => { const done = i !== cur && doneFn(k); return `<span class="src-step${i === cur ? ' on' : done ? ' ok' : ''}">${done ? ICO_OK : ''}<span>${i + 1}. ${esc(shortOf(k))}</span></span>`; }).join(''); }
 function renderSrcSteps() {
   const box = $('#srcSteps'); box.hidden = S.srcs.length < 2;
-  if (box.hidden) return;
-  box.innerHTML = S.srcs.map((k, i) => { const done = i !== S.si && funnelDone(k); return `<span class="src-step${i === S.si ? ' on' : done ? ' ok' : ''}">${done ? ICO_OK : ''}<span>${i + 1}. ${esc(shortOf(k))}</span></span>`; }).join('');
+  if (!box.hidden) box.innerHTML = stepsHTML(S.si, funnelDone);
+}
+// Perfil dos leads (etapa 3): também um por origem
+function renderQlHead() {
+  const multi = S.srcs.length > 1 && S.qsrc;
+  $('#ql-title').innerHTML = multi ? `Como está o perfil dos leads ${ofSrc(S.qsrc)}?` : 'Como está o perfil dos leads?';
+  const box = $('#qlSteps'); box.hidden = !multi;
+  if (multi) box.innerHTML = stepsHTML(S.qi, profDone);
+}
+const profValid = p => !!(p && p.quality != null && p.income != null && p.reasons.length > 0 && (!p.reasons.includes('outro') || (p.reasonOther || '').trim().length >= 3));
+function curProf() { return { quality: S.quality, income: S.income, qualityScore: S.qualityScore, incomeScore: S.incomeScore, reasons: [...S.reasons], reasonOther: S.reasonOther }; }
+function profDone(k) { return profValid(k === S.qsrc ? curProf() : S.profs[k]); }
+function saveProf() { if (S.qsrc) S.profs[S.qsrc] = curProf(); }
+function loadProf(i, dir) {
+  S.qi = Math.max(0, Math.min(i, S.srcs.length - 1)); S.qsrc = S.srcs[S.qi] || null;
+  const p = S.profs[S.qsrc] || {};
+  Object.assign(S, { quality: p.quality ?? null, income: p.income ?? null, qualityScore: p.qualityScore ?? null, incomeScore: p.incomeScore ?? null, reasons: [...(p.reasons || [])], reasonOther: p.reasonOther || '' });
+  $$('.thermo').forEach(b => { buildThermo(b); const n = S[b.dataset.key + 'Score']; if (n) b._select(n, true); });
+  $('#otherTxt').value = S.reasonOther; $('#otherTxt')._touched = false;
+  if (dir) go('quality', dir);
+  syncReasons(); renderQlHead();
 }
 function funnelDone(k) { const f = k === S.src ? curFunnel() : S.funnels[k]; return !!(f && f.done[0] && f.done[1] && f.done[2] && (!(metaAsked() && k === 'google') || f.done[3])); }
 // Um funil por origem: guarda e restaura as respostas da origem atual
@@ -1470,7 +1494,7 @@ function commitQ(i) {
   saveDraft();
 }
 async function funnelNext() {
-  if (S.fq >= NQ()) { saveCur(); if (S.si < S.srcs.length - 1) return loadSrc(S.si + 1, 1); return go('quality'); }
+  if (S.fq >= NQ()) { saveCur(); if (S.si < S.srcs.length - 1) return loadSrc(S.si + 1, 1); go('quality'); loadProf(0); return; }
   const i = S.fq; const err = validateQ(i);
   qError(i, err); if (err) { $('.num-input', qEl(i))?.classList.add('bump'); return; }
   commitQ(i);
@@ -1548,7 +1572,7 @@ function buildThermo(box) {
     const w = $('.th-word', box); w.textContent = cfg.labels[bk]; w.style.background = mix(scoreColor(n), '#ffffff', 0.82); w.style.color = mix(scoreColor(n), '#000000', 0.35);
     $('.th-note', box).textContent = cfg.notes[bk];
     if (!silent) vibrate(8);
-    renderSideExtra(); updateBar(); saveDraft();
+    renderSideExtra(); updateBar(); if (S.screen === 'quality') renderQlHead(); saveDraft();
   };
   box._select = select;
   const scale = $('.th-scale', box);
@@ -1557,11 +1581,11 @@ function buildThermo(box) {
   scale.addEventListener('pointerdown', e => { drag = true; scale.setPointerCapture(e.pointerId); last = at(e); select(last); });
   scale.addEventListener('pointermove', e => { if (!drag) return; const n = at(e); if (n !== last) { last = n; select(n); } });
   ['pointerup', 'pointercancel'].forEach(ev => scale.addEventListener(ev, () => { drag = false; }));
-  box.addEventListener('keydown', e => {
-    const cur = S[key + 'Score'] || 0;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); select(cur + 1); btns[Math.min(9, cur)].focus(); }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); select(Math.max(1, cur - 1)); btns[Math.max(0, cur - 2)].focus(); }
-  });
+  if (!box._kd) { box._kd = true; box.addEventListener('keydown', e => {
+    const cur = S[key + 'Score'] || 0, bs = $$('.th-scale button', box);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); box._select(cur + 1); bs[Math.min(9, cur)].focus(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); box._select(Math.max(1, cur - 1)); bs[Math.max(0, cur - 2)].focus(); }
+  }); }
 }
 $$('.thermo').forEach(buildThermo);
 
@@ -1594,7 +1618,7 @@ function syncReasons() {
   const other = S.reasons.includes('outro');
   $('#otherReveal').classList.toggle('open', other);
   $('#qlErr').textContent = other && S.reasonOther.trim().length < 3 && $('#otherTxt')._touched ? 'Descreva o outro motivo para continuar.' : '';
-  renderSideExtra(); updateBar(); saveDraft();
+  renderSideExtra(); updateBar(); if (S.screen === 'quality') renderQlHead(); saveDraft();
 }
 $('#otherTxt').addEventListener('input', e => { S.reasonOther = e.target.value; e.target._touched = true; syncReasons(); });
 
@@ -1652,6 +1676,7 @@ function origin() {
   let ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
   return { device: mobile ? 'Celular' : (/iPad|Tablet/i.test(ua) ? 'Tablet' : 'Computador'), os, browser: app ? `${app} (navegador interno)` : br, tz, lang: navigator.language || '', screen: `${screen.width}x${screen.height}`, ref, page: location.host + location.pathname, at: new Date().toISOString() };
 }
+const profPayload = p => { p = p || {}; const rs = p.reasons || []; return { quality: p.quality ?? null, income: p.income ?? null, quality_score: p.qualityScore || null, income_score: p.incomeScore || null, reasons: rs, reason_other: rs.includes('outro') ? (p.reasonOther || '').trim() : '' }; };
 const gMeta = () => metaAsked() ? (S.funnels.google?.metaLeads ?? null) : null;
 function payload() {
   return {
@@ -1660,13 +1685,12 @@ function payload() {
     niche: S.niche,
     lead_source: S.srcs.length ? { key: S.srcs[0], label: labelOf(S.srcs[0]) } : null,
     // um funil por origem marcada (o Pulso separa em uma resposta por origem)
-    funnels: S.srcs.map(k => { const f = S.funnels[k] || {}; return { source: { key: k, label: labelOf(k) }, leads: f.leads ?? 0, consultas: f.consultas ?? 0, tratamentos: f.tratYes ? (f.tratamentos || 0) : 0, tratamentos_desc: f.tratYes ? (f.tratDesc || '') : '', meta_leads: k === 'google' && metaAsked() ? (f.metaLeads ?? null) : null }; }),
+    funnels: S.srcs.map(k => { const f = S.funnels[k] || {}; return { source: { key: k, label: labelOf(k) }, leads: f.leads ?? 0, consultas: f.consultas ?? 0, tratamentos: f.tratYes ? (f.tratamentos || 0) : 0, tratamentos_desc: f.tratYes ? (f.tratDesc || '') : '', meta_leads: k === 'google' && metaAsked() ? (f.metaLeads ?? null) : null, ...profPayload(S.profs[k]) }; }),
     vocab: S.vocab || 'medico',
     ...(T => ({ leads: T.leads, consultas: T.consultas, tratamentos: T.tratamentos }))(totals()),
     tratamentos_desc: S.srcs.map(k => S.funnels[k]?.tratYes ? S.funnels[k].tratDesc : '').filter(Boolean).join(' | ').slice(0, 300),
     meta_leads: gMeta(),
-    quality: S.quality, income: S.income, quality_score: S.qualityScore || null, income_score: S.incomeScore || null,
-    reasons: S.reasons, reason_other: S.reasons.includes('outro') ? S.reasonOther.trim() : '',
+    ...profPayload(S.profs[S.srcs[0]] || curProf()),
     comment: S.comment.trim(),
     origin: origin(),
     test: IS_TEST,
