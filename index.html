@@ -1430,10 +1430,11 @@ function applyVocab() {
 function placeViz() {
   const card = $('#vizCard');
   const wide = window.innerWidth >= 920;
-  const target = wide ? $('#side') : (S.screen === 'funnel' ? $('#vizSlot') : null);
+  // o funil só aparece no resumo final (sem a prévia animada durante as perguntas)
+  const target = null;
   if (target && card.parentElement !== target) target.appendChild(card);
   if (!target && card.parentElement && card.parentElement.id !== 'park') { (document.getElementById('park') || makePark()).appendChild(card); }
-  $('#side').style.visibility = wide && S.link && !['error'].includes(S.screen) ? 'visible' : 'hidden';
+  $('#side').style.display = 'none';
   renderSideExtra();
 }
 function makePark() { const d = document.createElement('div'); d.id = 'park'; d.hidden = true; document.body.appendChild(d); return d; }
@@ -1524,9 +1525,8 @@ async function funnelNext() {
   commitQ(i);
   const nextUndone = [0, 1, 2, 3].slice(0, NQ()).find(k => !isAnswered(k));
   if (nextUndone == null) {
+    S.finalePlayed = true;
     activateQ(NQ());
-    $('#btnNext').disabled = true;
-    if (!S.finalePlayed) { S.finalePlayed = true; await new Promise(r => setTimeout(r, 420)); await FN.finale(); }
     insight();
     updateBar();
   } else activateQ(nextUndone);
